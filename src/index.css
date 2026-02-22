@@ -177,6 +177,10 @@
   box-shadow: 0 0 20px hsl(43 96% 46% / 0.25), 0 0 60px hsl(43 96% 46% / 0.1);
 }
 
+:root:not(.dark) .premium-card:hover {
+  box-shadow: 0 0 15px hsl(43 96% 46% / 0.2), 0 0 40px hsl(43 96% 46% / 0.08);
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
@@ -210,11 +214,12 @@
   position: relative;
   isolation: isolate;
   border-radius: var(--radius);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .premium-card:hover {
   transform: scale(1.02);
+  box-shadow: 0 0 20px hsl(43 96% 56% / 0.25), 0 0 60px hsl(43 96% 56% / 0.1);
 }
 
 .premium-card::before {
