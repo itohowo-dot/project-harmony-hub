@@ -1,59 +1,92 @@
 
 
-# BitHive UI/UX Audit -- What's Built vs What May Be Missing
+# Fix 4 Remaining UI/UX Gaps
 
-## Summary
-
-There is no PRD file in the repository, so this audit is based on the project's clear scope as an **sBTC crowdfunding platform** (BitHive). The UI/UX implementation is very thorough. Here's the full inventory.
+Gap #4 (wallet toasts) is already implemented -- `useWallet.ts` already fires `toast.success` on connect and `toast` on disconnect. That leaves 4 gaps to fix.
 
 ---
 
-## What's Fully Implemented
+## 1. Share Button -- Clipboard Copy with Toast
 
-| Area | Status | Details |
-|------|--------|---------|
-| **Landing Page** (`/`) | Complete | Hero with parallax hexagons, animated stats, featured campaigns, How It Works, trust indicators, CTA |
-| **Explore Page** (`/explore`) | Complete | Search autocomplete with highlight, category filter, status tabs, sort dropdown, skeleton loading, load-more pagination, premium-card hover effects |
-| **Campaign Detail** (`/campaign/:id`) | Complete | Image, tabbed content (Story / Milestones / Backers / Updates), sticky funding sidebar, progress bar, confetti on funded campaigns, Share + Contract buttons |
-| **Contribution Modal** | Complete | Amount input, USD conversion, fee breakdown, simulated tx states (pending/success/error), confetti on success |
-| **Create Campaign** (`/create`) | Complete | 4-step wizard (Basic Info / Funding Goal / Milestones / Review), animated step indicator, image upload placeholder, milestone allocation bar, duration selector with block estimates, fee preview, terms checkboxes |
-| **Dashboard** (`/dashboard`) | Complete | Stats with CountUp, campaigns/contributions tabs, progress bars, manage links, empty states with CTAs |
-| **Campaign Manage** (`/campaign/:id/manage`) | Complete | Status header, overview stats, milestone management, backer list, action buttons (Claim Funds, Enable Refunds, Add Milestone, Settings) |
-| **Header** | Complete | Logo, desktop nav with active state, theme toggle (animated icon swap), wallet connect button with balance display |
-| **Mobile Nav** | Complete | Fixed bottom bar with animated active indicator, tap scale effect |
-| **Footer** | Complete | Brand, platform links, resources, security badges, How It Works scroll link |
-| **Wallet Modal** | Complete | Leather + Xverse wallet options, "Get Started" link |
-| **Theme System** | Complete | Light/dark with full CSS variable sets, smooth toggle |
-| **Design System** | Complete | Premium card rotating gradient borders, amber glow effects, honeycomb pattern, gradient text, mono-code font, custom scrollbar, reduced motion support |
-| **Loading States** | Complete | Skeleton cards, Suspense fallback, simulated loading delay on Explore |
-| **Accessibility** | Good | ARIA progressbars, focus-visible outlines, reduced motion, keyboard nav on search autocomplete |
-| **Responsive Design** | Complete | Mobile-first layouts, stacked grids, bottom nav for mobile, proper spacing adjustments |
-| **404 Page** | Complete | NotFound component |
+**File:** `src/pages/CampaignDetail.tsx`
 
----
+Add an `onClick` handler to the Share button that copies the current page URL to the clipboard and shows a success toast.
 
-## Minor UI/UX Gaps (Non-Critical)
+```tsx
+<Button
+  variant="ghost" size="sm"
+  className="gap-1 text-xs text-muted-foreground"
+  onClick={() => {
+    navigator.clipboard.writeText(window.location.href);
+    toast("Link copied to clipboard", { description: "Share it with your network!" });
+  }}
+>
+  <Share2 className="h-3.5 w-3.5" /> Share
+</Button>
+```
 
-These are polish items that are common in crowdfunding platforms but are NOT blocking -- they're "nice to haves" before integration:
-
-### 1. Campaign Image Upload (Create Page)
-The image upload area is a **placeholder div** ("Click to upload or drag & drop") with no actual file handling. This is expected since you said you'll handle integration, but the UI doesn't show a preview state for a selected image.
-
-### 2. Share Button (Campaign Detail)
-The Share button exists but has no functionality (no clipboard copy, no share sheet). This may be an integration concern.
-
-### 3. Resources Footer Links
-Documentation, Smart Contracts, API Reference, and FAQ links in the footer are non-functional (`cursor-pointer` but no `href` or route).
-
-### 4. No Toast/Notification on Wallet Connect/Disconnect
-Connecting or disconnecting the wallet happens silently -- no toast confirmation.
-
-### 5. No "Post Update" UI on Campaign Manage
-The manage page has "Add Milestone" and "Campaign Settings" buttons but no way to post an update (which would appear in the Updates tab on the detail page).
+Requires adding `import { toast } from "sonner"` to the file.
 
 ---
 
-## Verdict
+## 2. Footer Resource Links -- Placeholder Toasts
 
-**The UI/UX layer is essentially complete.** All core pages, components, modals, states (loading, empty, error, success), responsive layouts, animations, and the design system are fully built out. The remaining gaps are either integration-dependent (wallet, image upload, share) or minor polish items. You're in good shape to move to integration.
+**File:** `src/components/layout/Footer.tsx`
+
+Replace the static `<li>` elements in the Resources section with buttons that show a "Coming soon" toast on click, so users get feedback instead of nothing.
+
+```tsx
+{["Documentation", "Smart Contracts", "API Reference", "FAQ"].map((item) => (
+  <li key={item}>
+    <button
+      onClick={() => toast(`${item} coming soon`, { description: "We're working on it!" })}
+      className="hover:text-foreground transition-colors"
+    >
+      {item}
+    </button>
+  </li>
+))}
+```
+
+Requires adding `import { toast } from "sonner"` to the file.
+
+---
+
+## 3. Campaign Image Upload Preview State
+
+**File:** `src/pages/CreateCampaign.tsx`
+
+Add state for a selected image file and preview URL. Replace the static placeholder div with a file input that shows a preview thumbnail when an image is selected, with a remove button.
+
+- Add state: `const [imageFile, setImageFile] = useState<File | null>(null)`
+- Add a hidden `<input type="file" accept="image/*">` triggered by clicking the upload area
+- When a file is selected, create an object URL and display it as a preview
+- Add a small "Remove" button overlay to clear the selection
+- The upload area shows the preview image or the placeholder text
+
+---
+
+## 4. Post Update UI on Campaign Manage Page
+
+**File:** `src/pages/CampaignManage.tsx`
+
+Add a "Post Update" button to the Actions tab and a simple inline form (collapsible) with title + content fields and a submit button that shows a success toast.
+
+- Add a `<Button>` with a `MessageSquarePlus` icon labeled "Post Update" to the actions grid
+- When clicked, toggle a collapsible form below the grid with:
+  - Title input
+  - Content textarea  
+  - "Publish Update" button that fires a toast and resets the form
+- Import `MessageSquarePlus` from lucide-react, add `useState` for form visibility and field values
+
+---
+
+## Summary of Changes
+
+| File | Change |
+|------|--------|
+| `src/pages/CampaignDetail.tsx` | Add clipboard copy + toast to Share button |
+| `src/components/layout/Footer.tsx` | Add "coming soon" toasts to resource links |
+| `src/pages/CreateCampaign.tsx` | Add image file input, preview state, and remove button |
+| `src/pages/CampaignManage.tsx` | Add "Post Update" button and inline form in Actions tab |
 
