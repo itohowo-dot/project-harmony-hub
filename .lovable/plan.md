@@ -1,131 +1,70 @@
 
 
-# Accessibility: Keyboard Navigation and ARIA Labels
+# Add Visible Focus-Visible Ring Styles
 
-## Overview
+## Current State
 
-After auditing every interactive component and page, here are the specific accessibility gaps and fixes needed. The changes are grouped by component/page.
+The project already has a **global** `*:focus-visible` rule in `src/index.css` (line 127) that applies `ring-2 ring-ring ring-offset-2` to all elements. All shadcn UI components (Button, Input, Checkbox, Tabs, etc.) also have their own `focus-visible` classes.
 
----
+However, there are specific elements where the focus ring is either clipped, invisible, or missing explicit styling:
 
-## 1. Form Labels -- CreateCampaign.tsx and ContributionModal.tsx
+## Changes
 
-**Problem:** Plain `<label>` elements are not linked to their inputs via `htmlFor`/`id` pairs. Screen readers cannot associate labels with controls.
+### 1. Campaign Card Link -- `src/components/CampaignCard.tsx`
 
-**Fix:** Add unique `id` attributes to each `Input`/`Textarea`/`Select` and matching `htmlFor` on labels.
+The `<Link>` wraps a `<Card>` with `overflow-hidden`, which clips the global focus ring. Add explicit `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg` to the `<Link>` element so the ring renders outside the card boundary.
 
-- `CreateCampaign.tsx`: Campaign Title, Description, Category, Funding Goal, Campaign Duration labels (lines 190, 201, 213, 277, 289)
-- `ContributionModal.tsx`: Amount label (line 66)
+### 2. Custom Tab Buttons -- `src/pages/Explore.tsx` and `src/pages/Dashboard.tsx`
 
----
+The custom tab `<button>` elements have no explicit `focus-visible` classes. While the global rule applies, adding `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none` ensures consistent ring styling matching the rest of the UI components.
 
-## 2. Duration Selector -- CreateCampaign.tsx
+### 3. Duration Selector Buttons -- `src/pages/CreateCampaign.tsx`
 
-**Problem:** The 4 duration buttons (7/14/30/60 days) are visually a radio group but have no ARIA semantics. Screen readers see them as generic buttons with no grouping or selection state.
+The duration selector radio buttons (role="radio") lack explicit focus-visible styles. Add `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none` to each.
 
-**Fix:** Wrap in a `div` with `role="radiogroup"` and `aria-labelledby` pointing to the "Campaign Duration" label. Each button gets `role="radio"` and `aria-checked`.
+### 4. Image Upload Zone -- `src/pages/CreateCampaign.tsx`
 
----
+The upload `div[role="button"]` has no focus-visible styling. Add `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none` to the className.
 
-## 3. Custom Tab Bars -- Dashboard.tsx, Explore.tsx
+### 5. Milestone Delete Buttons -- `src/pages/CreateCampaign.tsx`
 
-**Problem:** The "My Campaigns / My Contributions" tabs in Dashboard and "All / Active / Successful / Ending Soon" tabs in Explore use plain `<button>` elements with no `role="tablist"` / `role="tab"` / `aria-selected` semantics.
+The icon-only delete buttons for milestones need explicit `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-md focus-visible:outline-none`.
 
-**Fix:** Add `role="tablist"` to the container `div`, `role="tab"` and `aria-selected` to each button.
+### 6. Header Nav Links -- `src/components/layout/Header.tsx`
 
----
+Desktop nav links have `rounded-md` but no explicit focus-visible ring classes. Add `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none`.
 
-## 4. Image Upload Area -- CreateCampaign.tsx
+### 7. Mobile Nav Links -- `src/components/layout/MobileNav.tsx`
 
-**Problem:** The drag-and-drop upload zone is a `div` with `onClick` but no keyboard support. It cannot be focused or activated with Enter/Space.
+Same treatment as header nav links for mobile menu items.
 
-**Fix:** Add `role="button"`, `tabIndex={0}`, `aria-label="Upload campaign image"`, and an `onKeyDown` handler that triggers the file input on Enter/Space.
+### 8. Premium Card wrapper -- `src/index.css`
 
----
+The `.premium-card` class uses `isolation: isolate` and pseudo-elements. Add a `focus-within` ring style so when the inner link is focused, the card shows a visible ring:
+```css
+.premium-card:focus-within {
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+  border-radius: var(--radius);
+}
+```
 
-## 5. Remove Image Button -- CreateCampaign.tsx
+### 9. Footer Links -- `src/components/layout/Footer.tsx`
 
-**Problem:** The "X" button to remove the uploaded image has no accessible label.
-
-**Fix:** Add `aria-label="Remove image"`.
-
----
-
-## 6. Icon-Only Buttons Missing Labels
-
-**Problem:** Several icon-only buttons lack `aria-label`:
-- Dashboard "View" button (Eye icon, line 213)
-- Milestone "Delete" button (Trash2 icon, line 357 in CreateCampaign)
-- ContributionModal "View on Explorer" button (has text, OK)
-
-**Fix:** Add `aria-label` to each icon-only button.
-
----
-
-## 7. Navigation `aria-current` -- Header.tsx, MobileNav.tsx
-
-**Problem:** Active nav links don't communicate current page to assistive technology.
-
-**Fix:** Add `aria-current="page"` when the link is active.
-
----
-
-## 8. Campaign Card Accessible Name -- CampaignCard.tsx
-
-**Problem:** The wrapping `<Link>` has no accessible label; screen readers will read all card text as the link name, which is noisy.
-
-**Fix:** Add `aria-label={campaign.title}` to the Link element.
-
----
-
-## 9. Landmark and Region Labels
-
-**Problem:** Sections like "Featured Campaigns", "How It Works", "Trust Indicators" on Index.tsx are semantic `<section>` elements without `aria-label` or `aria-labelledby`.
-
-**Fix:** Add `aria-label` or `aria-labelledby` to key sections on Index.tsx for easier landmark navigation.
-
----
-
-## 10. Footer Navigation
-
-**Problem:** Footer `<ul>` lists of links have no `aria-label` on the `<nav>` wrapper -- and there's no `<nav>` wrapper at all.
-
-**Fix:** Wrap footer link groups in `<nav aria-label="Footer navigation">`.
-
----
-
-## 11. Milestone Progress Bar -- CreateCampaign.tsx
-
-**Problem:** The milestone allocation bar (line 337-344) has no `role="progressbar"` or ARIA attributes.
-
-**Fix:** Add `role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and `aria-label`.
-
----
-
-## 12. Step Progress Indicator -- CreateCampaign.tsx
-
-**Problem:** The 4-step progress indicator has no ARIA semantics. Screen readers can't tell which step the user is on.
-
-**Fix:** Add `aria-label="Form progress"` to the stepper, and `aria-current="step"` on the active step.
-
----
+Footer anchor links should have `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none rounded-sm` for visible keyboard focus.
 
 ## Technical Summary
 
-| # | Change | File(s) | Complexity |
-|---|--------|---------|------------|
-| 1 | Link form labels to inputs | `CreateCampaign.tsx`, `ContributionModal.tsx` | Low |
-| 2 | Duration radio group ARIA | `CreateCampaign.tsx` | Low |
-| 3 | Tab ARIA for custom tabs | `Dashboard.tsx`, `Explore.tsx` | Low |
-| 4 | Upload zone keyboard support | `CreateCampaign.tsx` | Low |
-| 5 | Remove image aria-label | `CreateCampaign.tsx` | Low |
-| 6 | Icon-only button labels | `Dashboard.tsx`, `CreateCampaign.tsx` | Low |
-| 7 | aria-current on nav links | `Header.tsx`, `MobileNav.tsx` | Low |
-| 8 | Campaign card link label | `CampaignCard.tsx` | Low |
-| 9 | Section landmark labels | `Index.tsx` | Low |
-| 10 | Footer nav wrapper | `Footer.tsx` | Low |
-| 11 | Milestone progress bar ARIA | `CreateCampaign.tsx` | Low |
-| 12 | Step indicator ARIA | `CreateCampaign.tsx` | Low |
+| # | Element | File | Change |
+|---|---------|------|--------|
+| 1 | Campaign card link | `CampaignCard.tsx` | Add focus-visible ring + rounded-lg to Link |
+| 2 | Custom tab buttons | `Explore.tsx`, `Dashboard.tsx` | Add focus-visible ring classes |
+| 3 | Duration radio buttons | `CreateCampaign.tsx` | Add focus-visible ring classes |
+| 4 | Upload zone div | `CreateCampaign.tsx` | Add focus-visible ring classes |
+| 5 | Milestone delete buttons | `CreateCampaign.tsx` | Add focus-visible ring classes |
+| 6 | Header nav links | `Header.tsx` | Add focus-visible ring classes |
+| 7 | Mobile nav links | `MobileNav.tsx` | Add focus-visible ring classes |
+| 8 | Premium card wrapper | `index.css` | Add focus-within box-shadow |
+| 9 | Footer links | `Footer.tsx` | Add focus-visible ring + rounded-sm |
 
-All changes are frontend-only, no new dependencies required. Every fix is a small attribute addition or minor structural tweak.
+All changes are small class additions -- no new dependencies, no structural changes.
 
