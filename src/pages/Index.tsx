@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Hexagon, Shield, Zap, Eye, Wallet, PenTool, Rocket, ChevronRight } from "lucide-react";
+import { ArrowRight, Hexagon, Shield, Zap, Eye, Wallet, PenTool, Rocket, Trophy, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CampaignCard } from "@/components/CampaignCard";
@@ -118,9 +118,15 @@ const HOW_IT_WORKS = [
   },
   {
     icon: Rocket,
-    title: "Fund & Build",
+    title: "Fund with sBTC",
     desc: "Back projects with sBTC. Smart contracts release funds as milestones are hit — transparent and trustless.",
     step: "03",
+  },
+  {
+    icon: Trophy,
+    title: "Celebrate & Claim",
+    desc: "Once the goal is met, creators claim funds and backers share in the success. Fully on-chain.",
+    step: "04",
   },
 ];
 
@@ -151,11 +157,11 @@ function HowItWorksSection() {
             How <span className="text-gradient-amber">BitHive</span> Works
           </h2>
           <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-            Three steps from idea to funded project — powered by Bitcoin
+            Four steps from idea to funded project — powered by Bitcoin
           </p>
         </motion.div>
 
-        <div className="relative grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-6">
+        <div className="relative grid grid-cols-1 gap-10 md:grid-cols-4 md:gap-6">
           {/* Connecting line */}
           <div className="absolute top-16 left-[16.67%] right-[16.67%] hidden md:block">
             <motion.div

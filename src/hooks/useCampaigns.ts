@@ -5,6 +5,7 @@ export function useCampaigns(filters?: {
   status?: string;
   category?: string;
   search?: string;
+  sort?: string;
 }) {
   const campaigns = useMemo(() => {
     let result = [...MOCK_CAMPAIGNS];
@@ -30,8 +31,25 @@ export function useCampaigns(filters?: {
       );
     }
 
+    if (filters?.sort) {
+      switch (filters.sort) {
+        case "most-funded":
+          result.sort((a, b) => b.raisedAmount - a.raisedAmount);
+          break;
+        case "ending-soon":
+          result.sort((a, b) => a.daysLeft - b.daysLeft);
+          break;
+        case "most-backers":
+          result.sort((a, b) => b.backerCount - a.backerCount);
+          break;
+        case "newest":
+        default:
+          break;
+      }
+    }
+
     return result;
-  }, [filters?.status, filters?.category, filters?.search]);
+  }, [filters?.status, filters?.category, filters?.search, filters?.sort]);
 
   const getCampaignById = (id: string): Campaign | undefined =>
     MOCK_CAMPAIGNS.find((c) => c.id === id);

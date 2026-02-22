@@ -167,7 +167,14 @@ const CampaignDetail = () => {
 
                 {/* Progress */}
                 <div className="space-y-2">
-                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
+                  <div
+                    className="h-2.5 w-full overflow-hidden rounded-full bg-secondary"
+                    role="progressbar"
+                    aria-valuenow={Math.round(progress)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${campaign.title} funding progress`}
+                  >
                     <motion.div
                       className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light"
                       initial={{ width: 0 }}

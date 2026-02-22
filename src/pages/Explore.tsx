@@ -18,15 +18,23 @@ const TABS = [
   { value: "ending-soon", label: "Ending Soon" },
 ];
 
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest" },
+  { value: "most-funded", label: "Most Funded" },
+  { value: "ending-soon", label: "Ending Soon" },
+  { value: "most-backers", label: "Most Backers" },
+];
+
 const Explore = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [tab, setTab] = useState("all");
+  const [sort, setSort] = useState("newest");
   const [visibleCount, setVisibleCount] = useState(8);
   const [loading, setLoading] = useState(true);
 
-  const { campaigns } = useCampaigns({ status: tab, category, search });
+  const { campaigns } = useCampaigns({ status: tab, category, search, sort });
 
   useEffect(() => {
     setLoading(true);
@@ -57,6 +65,16 @@ const Explore = () => {
               <SelectContent>
                 {CATEGORIES.map((cat) => (
                   <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sort} onValueChange={setSort}>
+              <SelectTrigger className="w-full md:w-48 bg-card border-border/50">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                {SORT_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
