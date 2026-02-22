@@ -3,6 +3,10 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Plus, Trash2, CheckCircle2, Hexagon, Upload, X } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -46,22 +50,25 @@ const CreateCampaign = () => {
 
   // Image
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Step 4
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreeNoRefund, setAgreeNoRefund] = useState(false);
 
+  const processFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setImagePreview(url);
+  };
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please select an image file");
-        return;
-      }
-      const url = URL.createObjectURL(file);
-      setImagePreview(url);
-    }
+    if (file) processFile(file);
   };
 
   const removeImage = () => {
@@ -211,10 +218,24 @@ const CreateCampaign = () => {
                     ) : (
                       <div
                         onClick={() => fileInputRef.current?.click()}
-                        className="mt-1 flex h-32 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border/50 bg-secondary/30 text-sm text-muted-foreground cursor-pointer hover:border-primary/30 transition-colors"
+                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                        onDragEnter={(e) => { e.preventDefault(); setIsDragging(true); }}
+                        onDragLeave={() => setIsDragging(false)}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setIsDragging(false);
+                          const file = e.dataTransfer.files?.[0];
+                          if (file) processFile(file);
+                        }}
+                        className={cn(
+                          "mt-1 flex h-32 flex-col items-center justify-center gap-2 rounded-lg border border-dashed text-sm cursor-pointer transition-colors",
+                          isDragging
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border/50 bg-secondary/30 text-muted-foreground hover:border-primary/30"
+                        )}
                       >
                         <Upload className="h-5 w-5" />
-                        <span>Click to upload or drag & drop</span>
+                        <span>{isDragging ? "Drop image here" : "Click to upload or drag & drop"}</span>
                       </div>
                     )}
                   </div>
@@ -395,13 +416,25 @@ const CreateCampaign = () => {
               Continue <ArrowRight className="h-4 w-4" />
             </Button>
           ) : (
-            <Button
-              onClick={handleLaunch}
-              disabled={!canNext()}
-              className="gap-1 glow-amber font-heading"
-            >
-              Launch Campaign <Hexagon className="h-4 w-4" />
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button disabled={!canNext()} className="gap-1 glow-amber font-heading">
+                  Launch Campaign <Hexagon className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Launch your campaign?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will make your campaign live on BitHive. Once launched, your campaign details cannot be changed.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleLaunch}>Yes, Launch</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
       </div>
