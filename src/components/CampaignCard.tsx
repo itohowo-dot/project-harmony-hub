@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { type Campaign, getProgressPercent, formatBtc } from "@/lib/mock-data";
@@ -14,7 +15,11 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
 
   return (
     <Link to={`/campaign/${campaign.id}`}>
-      <Card className="group overflow-hidden border-border/50 bg-gradient-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_8px_30px_hsl(43_96%_56%/0.15)]">
+      <motion.div
+        whileHover={{ y: -4, boxShadow: "0 8px 30px hsl(43 96% 56% / 0.2)" }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      >
+      <Card className="group overflow-hidden border-border/50 bg-gradient-card transition-colors duration-300 hover:border-primary/30">
         {/* Image */}
         <div className="relative aspect-[16/10] overflow-hidden">
           <img
@@ -74,6 +79,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
           </div>
         </CardContent>
       </Card>
+      </motion.div>
     </Link>
   );
 }

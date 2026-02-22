@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import confetti from "canvas-confetti";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,9 +22,20 @@ export function ContributionModal({ open, onOpenChange, campaign }: Contribution
   const fee = numAmount * 0.025;
   const total = numAmount + fee;
 
+  useEffect(() => {
+    if (txState === "success") {
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { x: 0.5, y: 0.5 },
+        colors: ["#EAB308", "#F59E0B", "#FBBF24", "#FDE68A"],
+      });
+    }
+  }, [txState]);
+
+  // Handle contribution simulation
   const handleContribute = () => {
     setTxState("pending");
-    // Simulate transaction
     setTimeout(() => {
       if (Math.random() > 0.15) {
         setTxState("success");
