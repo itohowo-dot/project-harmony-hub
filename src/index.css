@@ -210,6 +210,11 @@
   position: relative;
   isolation: isolate;
   border-radius: var(--radius);
+  transition: transform 0.3s ease;
+}
+
+.premium-card:hover {
+  transform: scale(1.02);
 }
 
 .premium-card::before {
