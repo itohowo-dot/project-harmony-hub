@@ -3,8 +3,63 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Light theme (default root, overridden by .dark) */
   :root {
-    /* BitHive Dark Theme — Amber/Gold + Deep Navy */
+    --background: 40 30% 96%;
+    --foreground: 222 47% 11%;
+
+    --card: 40 20% 98%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 40 20% 98%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 43 96% 46%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 43 30% 92%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 10% 40%;
+
+    --accent: 43 80% 45%;
+    --accent-foreground: 222 47% 6%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 98%;
+
+    --border: 40 10% 85%;
+    --input: 40 10% 85%;
+    --ring: 43 96% 46%;
+
+    --radius: 0.75rem;
+
+    --amber-glow: 43 96% 46%;
+    --navy-deep: 40 30% 96%;
+    --navy-mid: 40 20% 92%;
+    --honey: 38 92% 50%;
+    --honey-light: 45 100% 72%;
+
+    --sidebar-background: 40 20% 94%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 43 96% 46%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 43 30% 92%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 40 10% 85%;
+    --sidebar-ring: 43 96% 46%;
+  }
+
+  /* Dark theme */
+  .dark {
     --background: 222 47% 6%;
     --foreground: 45 20% 90%;
 
@@ -38,7 +93,6 @@
 
     --radius: 0.75rem;
 
-    /* BitHive custom tokens */
     --amber-glow: 43 96% 56%;
     --navy-deep: 222 47% 6%;
     --navy-mid: 222 40% 12%;
@@ -94,11 +148,11 @@
   }
 
   .bg-gradient-navy {
-    background: linear-gradient(180deg, hsl(222 47% 6%) 0%, hsl(222 40% 10%) 100%);
+    background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--card)) 100%);
   }
 
   .bg-gradient-card {
-    background: linear-gradient(135deg, hsl(222 40% 12%) 0%, hsl(222 40% 8%) 100%);
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
   }
 
   .border-glow {
@@ -111,17 +165,21 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='%23f59e0b' stroke-width='0.5' opacity='0.08'/%3E%3C/svg%3E");
 }
 
+.light .honeycomb-bg {
+  opacity: 0.4;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(222 40% 8%);
+  background: hsl(var(--background));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(222 25% 25%);
+  background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 3px;
 }
 

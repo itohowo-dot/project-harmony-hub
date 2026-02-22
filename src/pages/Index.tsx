@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Hexagon, Shield, Zap, Eye, Wallet, PenTool, Rocket, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -57,25 +57,48 @@ function CountUp({ end, suffix = "", prefix = "", decimals = 0 }: { end: number;
   );
 }
 
+const HEXAGON_CONFIG = [
+  { left: "10%", top: "15%", size: "h-14 w-14 md:h-20 md:w-20", speed: 0.3 },
+  { left: "25%", top: "55%", size: "h-10 w-10 md:h-14 md:w-14", speed: 0.5 },
+  { left: "45%", top: "25%", size: "h-12 w-12 md:h-16 md:w-16", speed: 0.2 },
+  { left: "65%", top: "60%", size: "h-10 w-10 md:h-14 md:w-14", speed: 0.6 },
+  { left: "80%", top: "20%", size: "h-14 w-14 md:h-18 md:w-18", speed: 0.35 },
+  { left: "90%", top: "50%", size: "h-8 w-8 md:h-12 md:w-12", speed: 0.45 },
+];
+
 function FloatingHexagons() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
+
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute text-primary/10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, y: [0, -15, 0] }}
-          transition={{ duration: 5 + i, repeat: Infinity, delay: i * 0.8 }}
-          style={{
-            left: `${15 + i * 14}%`,
-            top: `${20 + (i % 3) * 25}%`,
-          }}
-        >
-          <Hexagon className="h-12 w-12 md:h-16 md:w-16" strokeWidth={1} />
-        </motion.div>
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none">
+      {HEXAGON_CONFIG.map((hex, i) => (
+        <ParallaxHexagon key={i} config={hex} index={i} scrollY={scrollY} />
       ))}
     </div>
+  );
+}
+
+function ParallaxHexagon({ config, index, scrollY }: { config: typeof HEXAGON_CONFIG[number]; index: number; scrollY: any }) {
+  const y = useTransform(scrollY, [0, 800], [0, -120 * config.speed]);
+  const x = useTransform(scrollY, [0, 800], [0, (index % 2 === 0 ? 1 : -1) * 30 * config.speed]);
+  const rotate = useTransform(scrollY, [0, 800], [0, (index % 2 === 0 ? 15 : -15) * config.speed]);
+
+  return (
+    <motion.div
+      className="absolute text-primary/10"
+      style={{ left: config.left, top: config.top, y, x, rotate }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1, delay: index * 0.15 }}
+    >
+      <motion.div
+        animate={{ y: [0, -15, 0] }}
+        transition={{ duration: 5 + index, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <Hexagon className={config.size} strokeWidth={1} />
+      </motion.div>
+    </motion.div>
   );
 }
 

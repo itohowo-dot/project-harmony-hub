@@ -1,7 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
-import { Hexagon, Wallet } from "lucide-react";
+import { Hexagon, Wallet, Sun, Moon } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
+import { useTheme } from "@/components/ThemeProvider";
 import { truncateAddress, formatBtc } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +17,7 @@ const NAV_LINKS = [
 export function Header() {
   const { pathname } = useLocation();
   const { wallet, toggleWallet } = useWallet();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -43,26 +46,46 @@ export function Header() {
           ))}
         </nav>
 
-        {/* Wallet Button */}
-        <Button
-          onClick={toggleWallet}
-          variant={wallet.connected ? "secondary" : "default"}
-          className={cn(
-            "gap-2 font-mono-code text-xs",
-            !wallet.connected && "glow-amber"
-          )}
-          size="sm"
-        >
-          <Wallet className="h-4 w-4" />
-          {wallet.connected ? (
-            <span>
-              {truncateAddress(wallet.address)}
-              <span className="ml-2 text-primary">{formatBtc(wallet.balance)}</span>
-            </span>
-          ) : (
-            "Connect Wallet"
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Theme Toggle */}
+          <Button
+            onClick={toggleTheme}
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 text-muted-foreground hover:text-foreground"
+            aria-label="Toggle theme"
+          >
+            <motion.div
+              key={theme}
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </motion.div>
+          </Button>
+
+          {/* Wallet Button */}
+          <Button
+            onClick={toggleWallet}
+            variant={wallet.connected ? "secondary" : "default"}
+            className={cn(
+              "gap-2 font-mono-code text-xs",
+              !wallet.connected && "glow-amber"
+            )}
+            size="sm"
+          >
+            <Wallet className="h-4 w-4" />
+            {wallet.connected ? (
+              <span>
+                {truncateAddress(wallet.address)}
+                <span className="ml-2 text-primary">{formatBtc(wallet.balance)}</span>
+              </span>
+            ) : (
+              "Connect Wallet"
+            )}
+          </Button>
+        </div>
       </div>
     </header>
   );
