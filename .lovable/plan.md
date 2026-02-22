@@ -1,41 +1,35 @@
 
-# Premium Card Effect + Smooth Scroll Verification
+# Fix Premium Card CSS + Cross-Page Scroll Verification
 
-## 1. Apply Premium Card Border to Featured Campaign Cards
+## 1. Fix Premium Card Rotating Gradient Border
 
-Add the `premium-card` class to the featured campaign cards on the landing page. The `.premium-card` CSS with the rotating gradient border already exists in `index.css` -- it just needs to be applied.
+The current `.premium-card` CSS has two issues preventing the gradient border from showing:
+
+1. **`overflow: hidden`** clips the `::before` pseudo-element which extends beyond the card via `inset: -2px`
+2. **`z-index: -1`** on `::before` pushes it behind the card background, making it invisible
 
 ### Changes
 
-**`src/pages/Index.tsx`** (lines 326-334)
-- Add `className="premium-card"` to the `motion.div` wrapper around each `CampaignCard` in the Featured Campaigns grid
-- This activates the rotating conic-gradient border effect defined in the existing CSS
+**`src/index.css`** (lines 209-213) -- Update `.premium-card`:
+- Remove `overflow: hidden`
+- Add `isolation: isolate` to create a proper stacking context so `z-index: -1` works correctly relative to the card, not the page background
 
-The wrapper becomes:
-```tsx
-<motion.div
-  key={campaign.id}
-  className="premium-card"
-  initial={{ opacity: 0, y: 20 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ delay: i * 0.1 }}
->
-  <CampaignCard campaign={campaign} />
-</motion.div>
+```css
+.premium-card {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--radius);
+}
 ```
 
-## 2. Smooth Scroll to "How It Works" -- Already Implemented
+No changes needed to the `::before` pseudo-element -- the `inset: -2px` and `z-index: -1` approach is correct once `isolation: isolate` creates the stacking context.
 
-The Footer component already has full smooth-scroll behavior for the "How It Works" link:
-- If on `/`, it scrolls directly to `#how-it-works`
-- If on another page, it navigates to `/` first, then retries scrolling up to 3 times with 400ms intervals
-- The `HowItWorksSection` already has `id="how-it-works"` on the section element
+## 2. Test Cross-Page Smooth Scroll
 
-No changes needed for this feature -- it is fully functional.
+After the CSS fix, navigate to `/explore` and click the "How It Works" footer link to verify it navigates back to `/` and scrolls to the section. This is already implemented in `Footer.tsx` with retry logic -- just needs manual verification.
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/pages/Index.tsx` | Add `premium-card` class to featured campaign card wrappers |
+| `src/index.css` | Remove `overflow: hidden`, add `isolation: isolate` on `.premium-card` |
