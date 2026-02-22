@@ -1,8 +1,10 @@
 import { useParams, Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
 import { ArrowLeft, Clock, Users, Share2, ExternalLink, CheckCircle2, Circle, Trophy, Medal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageWrapper } from "@/components/layout/PageWrapper";
@@ -17,6 +19,23 @@ const CampaignDetail = () => {
   const { getCampaignById } = useCampaigns();
   const campaign = getCampaignById(id || "");
   const [showContribute, setShowContribute] = useState(false);
+  const hasConfetti = useRef(false);
+
+  // Confetti burst for funded campaigns
+  useEffect(() => {
+    if (campaign?.status === "successful" && !hasConfetti.current) {
+      hasConfetti.current = true;
+      const timer = setTimeout(() => {
+        confetti({
+          particleCount: 120,
+          spread: 100,
+          origin: { x: 0.5, y: 0.3 },
+          colors: ["#EAB308", "#F59E0B", "#FBBF24", "#FDE68A", "#22C55E"],
+        });
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [campaign?.status]);
 
   if (!campaign) {
     return (
@@ -66,7 +85,7 @@ const CampaignDetail = () => {
               <TabsContent value="milestones" className="mt-4">
                 <Card className="border-border/50 bg-gradient-card">
                   <CardContent className="p-6 space-y-4">
-                    {campaign.milestones.length > 0 ? campaign.milestones.map((m, i) => (
+                    {campaign.milestones.length > 0 ? campaign.milestones.map((m) => (
                       <div key={m.id} className="flex items-start gap-3">
                         {m.completed ? (
                           <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
@@ -134,7 +153,14 @@ const CampaignDetail = () => {
             <Card className="sticky top-20 border-border/50 bg-gradient-card">
               <CardContent className="p-6 space-y-5">
                 <div>
-                  <Badge variant="outline" className="mb-3 text-xs border-primary/30 text-primary">{campaign.category}</Badge>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Badge variant="outline" className="text-xs border-primary/30 text-primary">{campaign.category}</Badge>
+                    {campaign.status === "successful" && (
+                      <Badge className="bg-success/20 text-success border-success/30 text-xs" variant="outline">
+                        🎉 Funded
+                      </Badge>
+                    )}
+                  </div>
                   <h1 className="font-heading text-xl font-bold leading-tight">{campaign.title}</h1>
                   <p className="mt-1 text-sm text-muted-foreground">by {campaign.creatorName}</p>
                 </div>
@@ -142,9 +168,11 @@ const CampaignDetail = () => {
                 {/* Progress */}
                 <div className="space-y-2">
                   <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light transition-all duration-700"
-                      style={{ width: `${progress}%` }}
+                    <motion.div
+                      className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress}%` }}
+                      transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
                     />
                   </div>
                   <div className="text-2xl font-bold text-primary font-mono-code">

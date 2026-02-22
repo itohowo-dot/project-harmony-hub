@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ArrowRight, Hexagon, Shield, Zap, Eye, Wallet, PenTool, Rocket, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -79,11 +79,25 @@ function FloatingHexagons() {
   );
 }
 
-const STEPS = [
-  { icon: Wallet, title: "Connect", desc: "Link your Stacks wallet securely" },
-  { icon: PenTool, title: "Create", desc: "Launch your campaign in minutes" },
-  { icon: Eye, title: "Fund", desc: "Back projects with sBTC" },
-  { icon: Rocket, title: "Succeed", desc: "Milestones unlock funds transparently" },
+const HOW_IT_WORKS = [
+  {
+    icon: Wallet,
+    title: "Connect Your Wallet",
+    desc: "Link your Stacks wallet in one click. Your keys, your funds — always in control.",
+    step: "01",
+  },
+  {
+    icon: PenTool,
+    title: "Create or Discover",
+    desc: "Launch a campaign in minutes or explore projects pushing Bitcoin's boundaries.",
+    step: "02",
+  },
+  {
+    icon: Rocket,
+    title: "Fund & Build",
+    desc: "Back projects with sBTC. Smart contracts release funds as milestones are hit — transparent and trustless.",
+    step: "03",
+  },
 ];
 
 const TRUST = [
@@ -91,6 +105,88 @@ const TRUST = [
   { icon: Zap, title: "Instant Settlements", desc: "sBTC enables fast, low-cost transactions" },
   { icon: Eye, title: "Transparent Fees", desc: "On-chain accountability, no hidden costs" },
 ];
+
+function HowItWorksSection() {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+
+  return (
+    <section ref={sectionRef} id="how-it-works" className="relative border-y border-border/50 bg-card/20 py-20 md:py-28 overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 honeycomb-bg opacity-30" />
+      
+      <div className="container relative z-10">
+        <motion.div
+          className="mb-16 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+        >
+          <span className="text-xs font-medium uppercase tracking-widest text-primary">Simple Process</span>
+          <h2 className="mt-2 font-heading text-3xl font-bold md:text-4xl">
+            How <span className="text-gradient-amber">BitHive</span> Works
+          </h2>
+          <p className="mx-auto mt-3 max-w-md text-muted-foreground">
+            Three steps from idea to funded project — powered by Bitcoin
+          </p>
+        </motion.div>
+
+        <div className="relative grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-6">
+          {/* Connecting line */}
+          <div className="absolute top-16 left-[16.67%] right-[16.67%] hidden md:block">
+            <motion.div
+              className="h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"
+              initial={{ scaleX: 0 }}
+              animate={isInView ? { scaleX: 1 } : {}}
+              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+            />
+          </div>
+
+          {HOW_IT_WORKS.map((step, i) => (
+            <motion.div
+              key={step.title}
+              className="relative text-center"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.3 + i * 0.2, duration: 0.5 }}
+            >
+              {/* Step number */}
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 font-mono-code text-5xl font-bold text-primary/10">
+                {step.step}
+              </span>
+
+              {/* Icon */}
+              <motion.div
+                className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10"
+                whileHover={{ scale: 1.1, borderColor: "hsl(43 96% 56% / 0.5)" }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <step.icon className="h-8 w-8 text-primary" />
+                <div className="absolute -inset-1 rounded-2xl bg-primary/5 blur-lg" />
+              </motion.div>
+
+              <h3 className="mt-6 font-heading text-xl font-semibold">{step.title}</h3>
+              <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground">{step.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          className="mt-14 text-center"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 1.2, duration: 0.5 }}
+        >
+          <Button asChild size="lg" className="glow-amber gap-2 font-heading">
+            <Link to="/explore">
+              Start Exploring <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 
 const Index = () => {
   const { featuredCampaigns } = useCampaigns();
@@ -189,38 +285,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="border-y border-border/50 bg-card/20 py-16 md:py-20">
-        <div className="container">
-          <div className="mb-12 text-center">
-            <h2 className="font-heading text-2xl font-bold md:text-3xl">How It Works</h2>
-            <p className="mt-2 text-muted-foreground">Four simple steps to fund the future</p>
-          </div>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-            {STEPS.map((step, i) => (
-              <motion.div
-                key={step.title}
-                className="relative text-center"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-              >
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10">
-                  <step.icon className="h-7 w-7 text-primary" />
-                </div>
-                {i < STEPS.length - 1 && (
-                  <div className="absolute right-0 top-8 hidden w-full translate-x-1/2 md:block">
-                    <div className="h-px w-full bg-gradient-to-r from-primary/40 to-transparent" />
-                  </div>
-                )}
-                <h3 className="mt-4 font-heading text-lg font-semibold">{step.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* How It Works — Enhanced */}
+      <HowItWorksSection />
 
       {/* Trust Indicators */}
       <section className="py-16 md:py-20">
