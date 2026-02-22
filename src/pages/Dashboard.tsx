@@ -158,10 +158,12 @@ const Dashboard = () => {
         </div>
 
         {/* Tabs */}
-        <div className="mb-6 flex gap-1 rounded-lg border border-border/50 bg-card/50 p-1">
+        <div className="mb-6 flex gap-1 rounded-lg border border-border/50 bg-card/50 p-1" role="tablist" aria-label="Dashboard tabs">
           {(["campaigns", "contributions"] as const).map((t) => (
             <button
               key={t}
+              role="tab"
+              aria-selected={tab === t}
               onClick={() => setTab(t)}
               className={cn(
                 "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors capitalize",
@@ -209,7 +211,7 @@ const Dashboard = () => {
                         <DashboardProgressBar progress={progress} />
                       </div>
                       <div className="flex gap-2 shrink-0">
-                        <Button asChild variant="outline" size="sm" className="border-border/50">
+                        <Button asChild variant="outline" size="sm" className="border-border/50" aria-label={`View ${campaign.title}`}>
                           <Link to={`/campaign/${campaign.id}`}><Eye className="h-3.5 w-3.5" /></Link>
                         </Button>
                         {tab === "campaigns" && (
