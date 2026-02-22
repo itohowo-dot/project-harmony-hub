@@ -1,48 +1,49 @@
 
+# Route-Based Code Splitting with React.lazy and Suspense
 
-# Add Confetti, Count-Up & Card Hover Glow Effects
+## Overview
+Replace static imports of all page components in `src/App.tsx` with `React.lazy()` dynamic imports, wrapped in a `Suspense` boundary with a branded loading fallback.
 
-## 1. Install canvas-confetti
-Add `canvas-confetti` (and its types) as a dependency for the confetti burst on successful contributions.
+## Changes
 
-## 2. Confetti on Successful Contribution
-In `src/components/ContributionModal.tsx`:
-- Import `canvas-confetti`
-- Fire a confetti burst (amber/gold colored particles) via `useEffect` when `txState` transitions to `"success"`
-- Use BitHive brand colors (gold, amber, honey) for the confetti particles
+### 1. Create Loading Fallback Component
+**New file**: `src/components/LoadingFallback.tsx`
+- A centered spinner/shimmer with the BitHive logo or a simple amber pulsing hexagon
+- Matches the dark theme (bg-background, amber accent)
+- Minimal footprint since it loads in the main bundle
 
-## 3. Improved Count-Up Animation
-The `CountUp` component in `src/pages/Index.tsx` already uses IntersectionObserver to animate on scroll. Enhancements:
-- Add an easing function (ease-out) instead of linear stepping for a more polished feel
-- Support decimal values (for the "Total Raised" sBTC stat)
-- Add a subtle scale pulse when the animation completes
+### 2. Update `src/App.tsx`
+- Replace all 7 static page imports with `React.lazy(() => import(...))`:
+  - `Index`, `Explore`, `CampaignDetail`, `CreateCampaign`, `Dashboard`, `CampaignManage`, `NotFound`
+- Wrap `<Routes>` in `<Suspense fallback={<LoadingFallback />}>`
+- Keep all other imports (QueryClient, Toaster, etc.) as static since they're needed immediately
 
-## 4. Card Hover Glow Effects with Framer Motion
-In `src/components/CampaignCard.tsx`:
-- Wrap the card in a `motion.div` with `whileHover` for smooth translateY, scale, and animated amber box-shadow glow
-- Add a subtle border-color transition to amber on hover
-- Respects `prefers-reduced-motion` by keeping hover effects minimal (no transform, just color change)
+### Before/After
 
-Also enhance trust/stats cards on the landing page (`src/pages/Index.tsx`) with similar `whileHover` glow effects.
+**Before:**
+```typescript
+import Index from "./pages/Index";
+import Explore from "./pages/Explore";
+// ... 5 more static imports
+```
 
----
+**After:**
+```typescript
+import { lazy, Suspense } from "react";
+import { LoadingFallback } from "./components/LoadingFallback";
 
-## Technical Details
+const Index = lazy(() => import("./pages/Index"));
+const Explore = lazy(() => import("./pages/Explore"));
+// ... 5 more lazy imports
 
-### Files Modified
-| File | Change |
-|------|--------|
-| `package.json` | Add `canvas-confetti` + `@types/canvas-confetti` |
-| `src/components/ContributionModal.tsx` | Import confetti, fire burst on success state with gold/amber colors |
-| `src/pages/Index.tsx` | Enhance `CountUp` with easing + decimal support; add `whileHover` glow to stats and trust cards |
-| `src/components/CampaignCard.tsx` | Wrap in `motion.div` with `whileHover` translateY + boxShadow glow animation |
+// In JSX:
+<Suspense fallback={<LoadingFallback />}>
+  <Routes>...</Routes>
+</Suspense>
+```
 
-### Confetti Configuration
-- Colors: `['#EAB308', '#F59E0B', '#FBBF24', '#FDE68A']` (amber/gold palette)
-- Particle count: 80, spread: 70, origin from center of viewport
-- Fires once on success state entry
-
-### Card Hover Motion Config
-- `whileHover`: `{ y: -4, boxShadow: "0 8px 30px hsl(43 96% 56% / 0.2)" }`
-- `transition`: `{ type: "spring", stiffness: 300, damping: 20 }`
-
+## Technical Notes
+- All page components already use `export default`, which is required for `React.lazy`
+- Vite automatically creates separate chunks for each lazy import
+- The loading fallback stays in the main bundle (tiny component)
+- No changes needed to any page components themselves
