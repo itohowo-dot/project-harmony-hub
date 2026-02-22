@@ -111,6 +111,7 @@ const Explore = () => {
                 {campaigns.slice(0, visibleCount).map((campaign, i) => (
                   <motion.div
                     key={campaign.id}
+                    className="premium-card"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
