@@ -39,7 +39,7 @@ export function Header() {
               to={path}
               aria-current={pathname === path ? "page" : undefined}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 pathname === path
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"

@@ -25,7 +25,7 @@ export function MobileNav() {
               aria-current={isActive ? "page" : undefined}
               aria-label={label}
               className={cn(
-                "relative flex flex-col items-center gap-1 px-3 py-1.5 text-xs transition-colors",
+                "relative flex flex-col items-center gap-1 px-3 py-1.5 text-xs transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}
             >

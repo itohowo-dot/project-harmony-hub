@@ -42,10 +42,10 @@ export function Footer() {
           <nav aria-label="Platform navigation" className="space-y-3">
             <h4 className="font-heading text-sm font-semibold text-foreground">Platform</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/explore" className="hover:text-foreground transition-colors">Explore Campaigns</Link></li>
-              <li><Link to="/create" className="hover:text-foreground transition-colors">Create Campaign</Link></li>
-              <li><button onClick={scrollToHowItWorks} className="hover:text-foreground transition-colors">How It Works</button></li>
-              <li><Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link></li>
+              <li><Link to="/explore" className="hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">Explore Campaigns</Link></li>
+              <li><Link to="/create" className="hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">Create Campaign</Link></li>
+              <li><button onClick={scrollToHowItWorks} className="hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">How It Works</button></li>
+              <li><Link to="/dashboard" className="hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">Dashboard</Link></li>
             </ul>
           </nav>
 
@@ -57,7 +57,7 @@ export function Footer() {
                 <li key={item}>
                   <button
                     onClick={() => toast(`${item} coming soon`, { description: "We're working on it!" })}
-                    className="hover:text-foreground transition-colors"
+                    className="hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     {item}
                   </button>

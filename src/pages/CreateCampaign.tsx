@@ -263,7 +263,7 @@ const CreateCampaign = () => {
                           if (file) processFile(file);
                         }}
                         className={cn(
-                          "mt-1 flex h-32 flex-col items-center justify-center gap-2 rounded-lg border border-dashed text-sm cursor-pointer transition-colors",
+                          "mt-1 flex h-32 flex-col items-center justify-center gap-2 rounded-lg border border-dashed text-sm cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                           isDragging
                             ? "border-primary bg-primary/10 text-primary"
                             : "border-border/50 bg-secondary/30 text-muted-foreground hover:border-primary/30"
@@ -304,7 +304,7 @@ const CreateCampaign = () => {
                           aria-checked={duration === d.days}
                           onClick={() => setDuration(d.days)}
                           className={cn(
-                            "rounded-lg border p-3 text-center transition-colors",
+                            "rounded-lg border p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                             duration === d.days
                               ? "border-primary bg-primary/10 text-primary"
                               : "border-border/50 bg-secondary/30 text-muted-foreground hover:border-primary/30"
@@ -372,7 +372,7 @@ const CreateCampaign = () => {
                     <div key={m.id} className="space-y-2 rounded-lg border border-border/30 bg-secondary/20 p-4">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium text-muted-foreground">Milestone {i + 1}</span>
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeMilestone(m.id)} aria-label={`Remove milestone ${i + 1}`}>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 focus-visible:ring-offset-1" onClick={() => removeMilestone(m.id)} aria-label={`Remove milestone ${i + 1}`}>
                           <Trash2 className="h-3.5 w-3.5 text-destructive" />
                         </Button>
                       </div>

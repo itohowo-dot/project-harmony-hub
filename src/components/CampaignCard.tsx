@@ -34,7 +34,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
   }, [progress]);
 
   return (
-    <Link to={`/campaign/${campaign.id}`} aria-label={campaign.title}>
+    <Link to={`/campaign/${campaign.id}`} aria-label={campaign.title} className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
       <div>
       <Card className="group overflow-hidden border-border/50 bg-gradient-card transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_20px_hsl(43_96%_56%/0.15)]">
         {/* Image */}

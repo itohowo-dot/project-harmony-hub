@@ -222,6 +222,10 @@
   box-shadow: 0 0 20px hsl(43 96% 56% / 0.25), 0 0 60px hsl(43 96% 56% / 0.1);
 }
 
+.premium-card:focus-within {
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+}
+
 .premium-card::before {
   content: "";
   position: absolute;
