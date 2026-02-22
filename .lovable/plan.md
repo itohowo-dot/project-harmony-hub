@@ -1,92 +1,87 @@
 
 
-# Fix 4 Remaining UI/UX Gaps
+# Drag-and-Drop Image Upload + Launch Confirmation Dialog
 
-Gap #4 (wallet toasts) is already implemented -- `useWallet.ts` already fires `toast.success` on connect and `toast` on disconnect. That leaves 4 gaps to fix.
-
----
-
-## 1. Share Button -- Clipboard Copy with Toast
-
-**File:** `src/pages/CampaignDetail.tsx`
-
-Add an `onClick` handler to the Share button that copies the current page URL to the clipboard and shows a success toast.
-
-```tsx
-<Button
-  variant="ghost" size="sm"
-  className="gap-1 text-xs text-muted-foreground"
-  onClick={() => {
-    navigator.clipboard.writeText(window.location.href);
-    toast("Link copied to clipboard", { description: "Share it with your network!" });
-  }}
->
-  <Share2 className="h-3.5 w-3.5" /> Share
-</Button>
-```
-
-Requires adding `import { toast } from "sonner"` to the file.
-
----
-
-## 2. Footer Resource Links -- Placeholder Toasts
-
-**File:** `src/components/layout/Footer.tsx`
-
-Replace the static `<li>` elements in the Resources section with buttons that show a "Coming soon" toast on click, so users get feedback instead of nothing.
-
-```tsx
-{["Documentation", "Smart Contracts", "API Reference", "FAQ"].map((item) => (
-  <li key={item}>
-    <button
-      onClick={() => toast(`${item} coming soon`, { description: "We're working on it!" })}
-      className="hover:text-foreground transition-colors"
-    >
-      {item}
-    </button>
-  </li>
-))}
-```
-
-Requires adding `import { toast } from "sonner"` to the file.
-
----
-
-## 3. Campaign Image Upload Preview State
+## 1. Drag-and-Drop Support for Image Upload
 
 **File:** `src/pages/CreateCampaign.tsx`
 
-Add state for a selected image file and preview URL. Replace the static placeholder div with a file input that shows a preview thumbnail when an image is selected, with a remove button.
+Add `isDragging` state and drag event handlers (`onDragOver`, `onDragEnter`, `onDragLeave`, `onDrop`) to the upload area div. Extract a shared `processFile` helper from the existing `handleImageSelect` to reuse for both click-upload and drop.
 
-- Add state: `const [imageFile, setImageFile] = useState<File | null>(null)`
-- Add a hidden `<input type="file" accept="image/*">` triggered by clicking the upload area
-- When a file is selected, create an object URL and display it as a preview
-- Add a small "Remove" button overlay to clear the selection
-- The upload area shows the preview image or the placeholder text
+### State addition
+- `const [isDragging, setIsDragging] = useState(false);`
+
+### Helper function
+Extract file validation logic into a reusable function:
+```
+const processFile = (file: File) => {
+  if (!file.type.startsWith("image/")) {
+    toast.error("Please select an image file");
+    return;
+  }
+  const url = URL.createObjectURL(file);
+  setImagePreview(url);
+};
+```
+
+### Upload area changes (lines 211-219)
+Add drag event handlers and conditional styling to the placeholder div:
+- `onDragOver`: prevent default, set `isDragging` to true
+- `onDragEnter`: prevent default, set `isDragging` to true
+- `onDragLeave`: set `isDragging` to false
+- `onDrop`: prevent default, set `isDragging` to false, process the first dropped file
+- Conditional classes: when `isDragging` is true, apply `border-primary bg-primary/10` instead of the default muted styles
+- Update the text to say "Drop image here" when dragging
 
 ---
 
-## 4. Post Update UI on Campaign Manage Page
+## 2. Confirmation Dialog Before Launch
 
-**File:** `src/pages/CampaignManage.tsx`
+**File:** `src/pages/CreateCampaign.tsx`
 
-Add a "Post Update" button to the Actions tab and a simple inline form (collapsible) with title + content fields and a submit button that shows a success toast.
+Wrap the "Launch Campaign" button with an `AlertDialog` so the user must confirm before the campaign goes live.
 
-- Add a `<Button>` with a `MessageSquarePlus` icon labeled "Post Update" to the actions grid
-- When clicked, toggle a collapsible form below the grid with:
-  - Title input
-  - Content textarea  
-  - "Publish Update" button that fires a toast and resets the form
-- Import `MessageSquarePlus` from lucide-react, add `useState` for form visibility and field values
+### Import addition
+Add `AlertDialog`, `AlertDialogAction`, `AlertDialogCancel`, `AlertDialogContent`, `AlertDialogDescription`, `AlertDialogFooter`, `AlertDialogHeader`, `AlertDialogTitle`, `AlertDialogTrigger` from `@/components/ui/alert-dialog`.
+
+### Change (lines 397-404)
+Replace the plain `<Button onClick={handleLaunch}>` with:
+```
+<AlertDialog>
+  <AlertDialogTrigger asChild>
+    <Button disabled={!canNext()} className="gap-1 glow-amber font-heading">
+      Launch Campaign <Hexagon className="h-4 w-4" />
+    </Button>
+  </AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Launch your campaign?</AlertDialogTitle>
+      <AlertDialogDescription>
+        This will make your campaign live on BitHive.
+        Once launched, your campaign details cannot be changed.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogAction onClick={handleLaunch}>
+        Yes, Launch
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
 
 ---
 
-## Summary of Changes
+## Summary
 
-| File | Change |
-|------|--------|
-| `src/pages/CampaignDetail.tsx` | Add clipboard copy + toast to Share button |
-| `src/components/layout/Footer.tsx` | Add "coming soon" toasts to resource links |
-| `src/pages/CreateCampaign.tsx` | Add image file input, preview state, and remove button |
-| `src/pages/CampaignManage.tsx` | Add "Post Update" button and inline form in Actions tab |
+| Change | File | Lines affected |
+|--------|------|---------------|
+| Add `isDragging` state | `CreateCampaign.tsx` | Near line 48 |
+| Add `processFile` helper | `CreateCampaign.tsx` | Near line 55 |
+| Add drag handlers + visual feedback to upload div | `CreateCampaign.tsx` | Lines 211-219 |
+| Import AlertDialog components | `CreateCampaign.tsx` | Line 1-14 |
+| Wrap Launch button with AlertDialog | `CreateCampaign.tsx` | Lines 397-404 |
+
+All changes are in a single file. No new dependencies needed.
 
