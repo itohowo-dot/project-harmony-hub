@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { formatBtc, formatUsd, getProgressPercent, truncateAddress } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ const CampaignManage = () => {
   const { id } = useParams();
   const { getCampaignById } = useCampaigns();
   const campaign = getCampaignById(id || "");
+  usePageTitle(campaign ? `Manage ${campaign.title}` : "Campaign Not Found");
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [updateTitle, setUpdateTitle] = useState("");
   const [updateContent, setUpdateContent] = useState("");

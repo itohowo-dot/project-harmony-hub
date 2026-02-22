@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { WalletProvider } from "@/contexts/WalletContext";
 import LoadingFallback from "./components/LoadingFallback";
 
 const Index = lazy(() => import("./pages/Index"));
@@ -19,6 +20,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <ThemeProvider>
+    <WalletProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
@@ -38,6 +40,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
+    </WalletProvider>
   </ThemeProvider>
 );
 

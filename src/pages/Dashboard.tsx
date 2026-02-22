@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { MOCK_CAMPAIGNS, formatBtc, getProgressPercent } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useState, useRef, useEffect, useCallback } from "react";
 
 function DashboardProgressBar({ progress }: { progress: number }) {
@@ -94,6 +95,7 @@ const STAT_TOOLTIPS = [
 ];
 
 const Dashboard = () => {
+  usePageTitle("Dashboard");
   const [tab, setTab] = useState<"campaigns" | "contributions">("campaigns");
   const myCampaigns = MOCK_CAMPAIGNS.filter((c) => MY_CAMPAIGN_IDS.includes(c.id));
   const myContributions = MOCK_CAMPAIGNS.filter((c) => MY_CONTRIBUTION_IDS.includes(c.id));

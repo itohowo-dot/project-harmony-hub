@@ -8,6 +8,7 @@ import { CampaignCard } from "@/components/CampaignCard";
 import { CampaignCardSkeleton } from "@/components/CampaignCardSkeleton";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { CATEGORIES } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,7 @@ const SORT_OPTIONS = [
 ];
 
 const Explore = () => {
+  usePageTitle("Explore Campaigns");
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
@@ -129,8 +131,20 @@ const Explore = () => {
               )}
             </>
           ) : (
-            <div className="py-20 text-center">
+            <div className="py-20 text-center space-y-4">
               <p className="text-lg text-muted-foreground">No campaigns found matching your filters.</p>
+              <Button
+                variant="outline"
+                className="border-primary/30"
+                onClick={() => {
+                  setSearch("");
+                  setCategory("All");
+                  setTab("all");
+                  setSort("newest");
+                }}
+              >
+                Clear all filters
+              </Button>
             </div>
           )}
         </div>

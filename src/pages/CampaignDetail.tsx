@@ -3,13 +3,14 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
-import { ArrowLeft, Clock, Users, Share2, ExternalLink, CheckCircle2, Circle, Trophy, Medal } from "lucide-react";
+import { ArrowLeft, Clock, Users, Share2, ExternalLink, CheckCircle2, Circle, Trophy, Medal, Hexagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { formatBtc, formatUsd, getProgressPercent, truncateAddress } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -21,6 +22,7 @@ const CampaignDetail = () => {
   const campaign = getCampaignById(id || "");
   const [showContribute, setShowContribute] = useState(false);
   const hasConfetti = useRef(false);
+  usePageTitle(campaign?.title || "Campaign Not Found");
 
   // Confetti burst for funded campaigns
   useEffect(() => {
@@ -41,12 +43,31 @@ const CampaignDetail = () => {
   if (!campaign) {
     return (
       <PageWrapper>
-        <div className="container py-20 text-center">
-          <p className="text-lg text-muted-foreground">Campaign not found.</p>
-          <Button asChild variant="outline" className="mt-4">
-            <Link to="/explore">Back to Explore</Link>
-          </Button>
-        </div>
+        <section className="relative flex flex-1 items-center justify-center py-20 honeycomb-bg">
+          <div className="text-center space-y-6">
+            <motion.div
+              animate={{ y: [0, -12, 0], rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="mx-auto"
+            >
+              <Hexagon className="mx-auto h-20 w-20 text-primary" fill="currentColor" strokeWidth={1} />
+            </motion.div>
+            <div>
+              <h1 className="font-heading text-4xl font-bold text-gradient-amber">Campaign Not Found</h1>
+              <p className="mt-2 text-lg text-muted-foreground">
+                This campaign doesn't exist or may have been removed
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button asChild className="glow-amber font-heading">
+                <Link to="/explore">Explore Campaigns</Link>
+              </Button>
+              <Button asChild variant="outline" className="border-primary/30 font-heading">
+                <Link to="/">Return to Hive</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
       </PageWrapper>
     );
   }
@@ -61,8 +82,8 @@ const CampaignDetail = () => {
         </Button>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-          {/* Left: Image + Tabs */}
-          <div className="space-y-6">
+          {/* Left: Image + Tabs (order-2 on mobile so sidebar shows first) */}
+          <div className="space-y-6 order-2 lg:order-1">
             <div className="overflow-hidden rounded-xl">
               <img src={campaign.imageUrl} alt={campaign.title} className="aspect-video w-full object-cover" />
             </div>
@@ -149,8 +170,8 @@ const CampaignDetail = () => {
             </Tabs>
           </div>
 
-          {/* Right: Funding Sidebar */}
-          <div className="space-y-4">
+          {/* Right: Funding Sidebar (order-1 on mobile so it shows first) */}
+          <div className="space-y-4 order-1 lg:order-2">
             <Card className="sticky top-20 border-border/50 bg-gradient-card">
               <CardContent className="p-6 space-y-5">
                 <div>
@@ -220,7 +241,11 @@ const CampaignDetail = () => {
                   >
                     <Share2 className="h-3.5 w-3.5" /> Share
                   </Button>
-                  <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground">
+                  <Button
+                    variant="ghost" size="sm"
+                    className="gap-1 text-xs text-muted-foreground"
+                    onClick={() => toast("Contract explorer coming soon", { description: "On-chain contract details will be available at launch." })}
+                  >
                     <ExternalLink className="h-3.5 w-3.5" /> Contract
                   </Button>
                 </div>
