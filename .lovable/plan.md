@@ -1,87 +1,131 @@
 
 
-# Remaining UI/UX Polish Items
+# Accessibility: Keyboard Navigation and ARIA Labels
 
-Beyond backend, error handling, and testing (which you'll handle), here are the gaps to reach production quality:
+## Overview
 
----
-
-## 1. Missing `<meta>` tags and SEO per page
-
-Currently there's a single `<title>` in `index.html`. Each route should have its own page title (e.g., "Explore Campaigns | BitHive", "Solar Grid Campaign | BitHive"). Use `document.title` or a small helper in each page component.
-
-**Files:** All page components (`Index.tsx`, `Explore.tsx`, `CampaignDetail.tsx`, `CreateCampaign.tsx`, `Dashboard.tsx`, `CampaignManage.tsx`, `NotFound.tsx`)
+After auditing every interactive component and page, here are the specific accessibility gaps and fixes needed. The changes are grouped by component/page.
 
 ---
 
-## 2. No skip-to-content link for accessibility
+## 1. Form Labels -- CreateCampaign.tsx and ContributionModal.tsx
 
-Screen reader and keyboard users have no way to skip past the header navigation. Add a visually-hidden "Skip to main content" link at the top of the layout.
+**Problem:** Plain `<label>` elements are not linked to their inputs via `htmlFor`/`id` pairs. Screen readers cannot associate labels with controls.
 
-**File:** `src/components/layout/PageWrapper.tsx` -- add a skip link before `<Header />` and an `id="main-content"` on the `<main>` element.
+**Fix:** Add unique `id` attributes to each `Input`/`Textarea`/`Select` and matching `htmlFor` on labels.
 
----
-
-## 3. Campaign detail sidebar stacking on mobile
-
-On mobile (390px), the sidebar with the funding progress, "Back This Project" button, etc. renders below the tabs content. The user has to scroll past the full story/milestones/backers/updates to reach the CTA. The funding card should appear above or at least have a sticky mobile CTA bar.
-
-**File:** `src/pages/CampaignDetail.tsx` -- reorder the grid on mobile so the sidebar summary appears first, or add a sticky bottom "Back This Project" bar on mobile.
+- `CreateCampaign.tsx`: Campaign Title, Description, Category, Funding Goal, Campaign Duration labels (lines 190, 201, 213, 277, 289)
+- `ContributionModal.tsx`: Amount label (line 66)
 
 ---
 
-## 4. No loading/empty states on the Explore page for zero results
+## 2. Duration Selector -- CreateCampaign.tsx
 
-When filters produce zero results, there's an empty state. But the message is generic. It should suggest clearing filters or broadening the search.
+**Problem:** The 4 duration buttons (7/14/30/60 days) are visually a radio group but have no ARIA semantics. Screen readers see them as generic buttons with no grouping or selection state.
 
-**File:** `src/pages/Explore.tsx` -- enhance the empty state with a "Clear filters" button.
-
----
-
-## 5. Wallet state is not shared across components
-
-Each component calling `useWallet()` gets its own independent state. If you connect the wallet in the header, the `CreateCampaign` or `CampaignDetail` pages won't know about it. This should use React Context.
-
-**File:** Create `src/contexts/WalletContext.tsx` with a provider, wrap the app in `App.tsx`, and update `useWallet` to consume context.
+**Fix:** Wrap in a `div` with `role="radiogroup"` and `aria-labelledby` pointing to the "Campaign Duration" label. Each button gets `role="radio"` and `aria-checked`.
 
 ---
 
-## 6. "Contract" button on campaign detail does nothing
+## 3. Custom Tab Bars -- Dashboard.tsx, Explore.tsx
 
-The "Contract" button next to "Share" has no onClick handler -- it's a dead button.
+**Problem:** The "My Campaigns / My Contributions" tabs in Dashboard and "All / Active / Successful / Ending Soon" tabs in Explore use plain `<button>` elements with no `role="tablist"` / `role="tab"` / `aria-selected` semantics.
 
-**File:** `src/pages/CampaignDetail.tsx` -- add a toast or link behavior similar to the footer resource links.
-
----
-
-## 7. No 404 handling for invalid campaign IDs
-
-Navigating to `/campaign/999` shows "Campaign not found" but with no back-navigation guidance beyond a single button. It should match the `NotFound` page style.
-
-**File:** `src/pages/CampaignDetail.tsx` -- improve the not-found fallback.
+**Fix:** Add `role="tablist"` to the container `div`, `role="tab"` and `aria-selected` to each button.
 
 ---
 
-## 8. Form state lost on browser back/forward
+## 4. Image Upload Area -- CreateCampaign.tsx
 
-If a user fills out the Create Campaign form, navigates away, and comes back, all form state is lost. Consider persisting to `sessionStorage`.
+**Problem:** The drag-and-drop upload zone is a `div` with `onClick` but no keyboard support. It cannot be focused or activated with Enter/Space.
 
-**File:** `src/pages/CreateCampaign.tsx` -- add `sessionStorage` persistence for form fields.
+**Fix:** Add `role="button"`, `tabIndex={0}`, `aria-label="Upload campaign image"`, and an `onKeyDown` handler that triggers the file input on Enter/Space.
 
 ---
 
-## Technical Details
+## 5. Remove Image Button -- CreateCampaign.tsx
+
+**Problem:** The "X" button to remove the uploaded image has no accessible label.
+
+**Fix:** Add `aria-label="Remove image"`.
+
+---
+
+## 6. Icon-Only Buttons Missing Labels
+
+**Problem:** Several icon-only buttons lack `aria-label`:
+- Dashboard "View" button (Eye icon, line 213)
+- Milestone "Delete" button (Trash2 icon, line 357 in CreateCampaign)
+- ContributionModal "View on Explorer" button (has text, OK)
+
+**Fix:** Add `aria-label` to each icon-only button.
+
+---
+
+## 7. Navigation `aria-current` -- Header.tsx, MobileNav.tsx
+
+**Problem:** Active nav links don't communicate current page to assistive technology.
+
+**Fix:** Add `aria-current="page"` when the link is active.
+
+---
+
+## 8. Campaign Card Accessible Name -- CampaignCard.tsx
+
+**Problem:** The wrapping `<Link>` has no accessible label; screen readers will read all card text as the link name, which is noisy.
+
+**Fix:** Add `aria-label={campaign.title}` to the Link element.
+
+---
+
+## 9. Landmark and Region Labels
+
+**Problem:** Sections like "Featured Campaigns", "How It Works", "Trust Indicators" on Index.tsx are semantic `<section>` elements without `aria-label` or `aria-labelledby`.
+
+**Fix:** Add `aria-label` or `aria-labelledby` to key sections on Index.tsx for easier landmark navigation.
+
+---
+
+## 10. Footer Navigation
+
+**Problem:** Footer `<ul>` lists of links have no `aria-label` on the `<nav>` wrapper -- and there's no `<nav>` wrapper at all.
+
+**Fix:** Wrap footer link groups in `<nav aria-label="Footer navigation">`.
+
+---
+
+## 11. Milestone Progress Bar -- CreateCampaign.tsx
+
+**Problem:** The milestone allocation bar (line 337-344) has no `role="progressbar"` or ARIA attributes.
+
+**Fix:** Add `role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and `aria-label`.
+
+---
+
+## 12. Step Progress Indicator -- CreateCampaign.tsx
+
+**Problem:** The 4-step progress indicator has no ARIA semantics. Screen readers can't tell which step the user is on.
+
+**Fix:** Add `aria-label="Form progress"` to the stepper, and `aria-current="step"` on the active step.
+
+---
+
+## Technical Summary
 
 | # | Change | File(s) | Complexity |
 |---|--------|---------|------------|
-| 1 | Dynamic page titles | All 7 page files | Low |
-| 2 | Skip-to-content link | `PageWrapper.tsx` | Low |
-| 3 | Mobile CTA bar for campaign detail | `CampaignDetail.tsx` + CSS | Medium |
-| 4 | Better empty state with "clear filters" | `Explore.tsx` | Low |
-| 5 | Wallet context provider | New context file + `App.tsx` + `useWallet.ts` + `Header.tsx` | Medium |
-| 6 | Fix dead "Contract" button | `CampaignDetail.tsx` | Low |
-| 7 | Better campaign not-found state | `CampaignDetail.tsx` | Low |
-| 8 | Form persistence via sessionStorage | `CreateCampaign.tsx` | Medium |
+| 1 | Link form labels to inputs | `CreateCampaign.tsx`, `ContributionModal.tsx` | Low |
+| 2 | Duration radio group ARIA | `CreateCampaign.tsx` | Low |
+| 3 | Tab ARIA for custom tabs | `Dashboard.tsx`, `Explore.tsx` | Low |
+| 4 | Upload zone keyboard support | `CreateCampaign.tsx` | Low |
+| 5 | Remove image aria-label | `CreateCampaign.tsx` | Low |
+| 6 | Icon-only button labels | `Dashboard.tsx`, `CreateCampaign.tsx` | Low |
+| 7 | aria-current on nav links | `Header.tsx`, `MobileNav.tsx` | Low |
+| 8 | Campaign card link label | `CampaignCard.tsx` | Low |
+| 9 | Section landmark labels | `Index.tsx` | Low |
+| 10 | Footer nav wrapper | `Footer.tsx` | Low |
+| 11 | Milestone progress bar ARIA | `CreateCampaign.tsx` | Low |
+| 12 | Step indicator ARIA | `CreateCampaign.tsx` | Low |
 
-All changes are frontend-only and require no new dependencies.
+All changes are frontend-only, no new dependencies required. Every fix is a small attribute addition or minor structural tweak.
 
