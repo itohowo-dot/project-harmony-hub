@@ -1,7 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Hexagon, Shield, Zap, Github } from "lucide-react";
 
 export function Footer() {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const scrollToHowItWorks = () => {
+    if (pathname === "/") {
+      document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/");
+      setTimeout(() => {
+        document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
+      }, 500);
+    }
+  };
+
   return (
     <footer className="border-t border-border/50 bg-card/30 pb-20 md:pb-0">
       <div className="container py-12">
@@ -23,7 +37,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/explore" className="hover:text-foreground transition-colors">Explore Campaigns</Link></li>
               <li><Link to="/create" className="hover:text-foreground transition-colors">Create Campaign</Link></li>
-              <li><a href="/#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
+              <li><button onClick={scrollToHowItWorks} className="hover:text-foreground transition-colors">How It Works</button></li>
               <li><Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link></li>
             </ul>
           </div>
