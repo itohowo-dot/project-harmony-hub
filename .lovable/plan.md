@@ -1,35 +1,22 @@
 
-# Fix Premium Card CSS + Cross-Page Scroll Verification
 
-## 1. Fix Premium Card Rotating Gradient Border
+# Speed Up Premium Card Border Rotation on Hover
 
-The current `.premium-card` CSS has two issues preventing the gradient border from showing:
+## Change
 
-1. **`overflow: hidden`** clips the `::before` pseudo-element which extends beyond the card via `inset: -2px`
-2. **`z-index: -1`** on `::before` pushes it behind the card background, making it invisible
-
-### Changes
-
-**`src/index.css`** (lines 209-213) -- Update `.premium-card`:
-- Remove `overflow: hidden`
-- Add `isolation: isolate` to create a proper stacking context so `z-index: -1` works correctly relative to the card, not the page background
+**`src/index.css`** -- Add a hover rule that reduces the animation duration on `.premium-card::before`:
 
 ```css
-.premium-card {
-  position: relative;
-  isolation: isolate;
-  border-radius: var(--radius);
+.premium-card:hover::before {
+  animation-duration: 1.5s;
 }
 ```
 
-No changes needed to the `::before` pseudo-element -- the `inset: -2px` and `z-index: -1` approach is correct once `isolation: isolate` creates the stacking context.
-
-## 2. Test Cross-Page Smooth Scroll
-
-After the CSS fix, navigate to `/explore` and click the "How It Works" footer link to verify it navigates back to `/` and scrolls to the section. This is already implemented in `Footer.tsx` with retry logic -- just needs manual verification.
+The base rotation is `4s linear infinite`. On hover, reducing to `1.5s` creates a noticeable but smooth speed-up. Adding `transition` to the pseudo-element is not needed since `animation-duration` changes take effect on the next cycle naturally, and the continuous rotation makes this feel seamless.
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/index.css` | Remove `overflow: hidden`, add `isolation: isolate` on `.premium-card` |
+| `src/index.css` | Add `.premium-card:hover::before` rule with faster animation duration |
+
