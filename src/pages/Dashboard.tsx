@@ -166,7 +166,7 @@ const Dashboard = () => {
               aria-selected={tab === t}
               onClick={() => setTab(t)}
               className={cn(
-                "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors capitalize",
+                "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >
