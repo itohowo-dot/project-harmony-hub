@@ -194,3 +194,48 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(43 96% 56% / 0.5);
 }
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Premium card rotating gradient border */
+.premium-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+
+.premium-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--premium-angle, 0deg),
+    hsl(var(--primary)),
+    hsl(var(--honey)),
+    hsl(var(--honey-light)),
+    hsl(var(--primary))
+  );
+  animation: premium-rotate 4s linear infinite;
+}
+
+@keyframes premium-rotate {
+  to {
+    --premium-angle: 360deg;
+  }
+}
+
+@property --premium-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}

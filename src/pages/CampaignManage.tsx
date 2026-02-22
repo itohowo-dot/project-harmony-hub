@@ -51,7 +51,14 @@ const CampaignManage = () => {
                 <p className="text-xs text-muted-foreground">of {formatBtc(campaign.goalAmount)} ({Math.round(progress)}%)</p>
               </div>
             </div>
-            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-secondary">
+            <div
+              className="mt-4 h-2 w-full overflow-hidden rounded-full bg-secondary"
+              role="progressbar"
+              aria-valuenow={Math.round(progress)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`${campaign.title} funding progress`}
+            >
               <div className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light transition-all duration-700" style={{ width: `${progress}%` }} />
             </div>
           </CardContent>

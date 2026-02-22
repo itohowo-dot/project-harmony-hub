@@ -33,7 +33,14 @@ function DashboardProgressBar({ progress }: { progress: number }) {
 
   return (
     <div className="mt-2 flex items-center gap-3" ref={barRef}>
-      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+      <div
+        className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary"
+        role="progressbar"
+        aria-valuenow={Math.round(progress)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Campaign funding progress"
+      >
         <div
           className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light"
           style={{ width: `${width}%`, transition: "width 1000ms cubic-bezier(0.22, 1, 0.36, 1)" }}

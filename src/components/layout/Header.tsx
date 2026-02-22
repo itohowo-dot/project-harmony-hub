@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Hexagon, Wallet, Sun, Moon } from "lucide-react";
 import { motion } from "framer-motion";
@@ -6,6 +7,7 @@ import { useWallet } from "@/hooks/useWallet";
 import { useTheme } from "@/components/ThemeProvider";
 import { truncateAddress, formatBtc } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import { WalletModal } from "@/components/WalletModal";
 
 const NAV_LINKS = [
   { path: "/", label: "Home" },
@@ -16,8 +18,9 @@ const NAV_LINKS = [
 
 export function Header() {
   const { pathname } = useLocation();
-  const { wallet, toggleWallet } = useWallet();
+  const { wallet, connect, disconnect } = useWallet();
   const { theme, toggleTheme } = useTheme();
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -67,7 +70,7 @@ export function Header() {
 
           {/* Wallet Button */}
           <Button
-            onClick={toggleWallet}
+            onClick={wallet.connected ? disconnect : () => setWalletModalOpen(true)}
             variant={wallet.connected ? "secondary" : "default"}
             className={cn(
               "gap-2 font-mono-code text-xs",
@@ -87,6 +90,12 @@ export function Header() {
           </Button>
         </div>
       </div>
+
+      <WalletModal
+        open={walletModalOpen}
+        onOpenChange={setWalletModalOpen}
+        onConnect={connect}
+      />
     </header>
   );
 }

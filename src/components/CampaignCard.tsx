@@ -74,7 +74,14 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
 
           {/* Progress Bar */}
           <div className="space-y-1.5" ref={barRef}>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+            <div
+              className="h-1.5 w-full overflow-hidden rounded-full bg-secondary"
+              role="progressbar"
+              aria-valuenow={Math.round(progress)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`${campaign.title} funding progress`}
+            >
               <div
                 className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light"
                 style={{
