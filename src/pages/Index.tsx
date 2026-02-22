@@ -9,29 +9,32 @@ import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
 import { PLATFORM_STATS, formatBtc } from "@/lib/mock-data";
 
-function CountUp({ end, suffix = "", prefix = "" }: { end: number; suffix?: string; prefix?: string }) {
+function CountUp({ end, suffix = "", prefix = "", decimals = 0 }: { end: number; suffix?: string; prefix?: string; decimals?: number }) {
   const [count, setCount] = useState(0);
+  const [done, setDone] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
   const hasAnimated = useRef(false);
 
   useEffect(() => {
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
           const duration = 1500;
-          const steps = 60;
-          const increment = end / steps;
-          let current = 0;
-          const timer = setInterval(() => {
-            current += increment;
-            if (current >= end) {
-              setCount(end);
-              clearInterval(timer);
+          const start = performance.now();
+          const step = (now: number) => {
+            const progress = Math.min((now - start) / duration, 1);
+            const eased = easeOut(progress);
+            setCount(eased * end);
+            if (progress < 1) {
+              requestAnimationFrame(step);
             } else {
-              setCount(Math.floor(current));
+              setCount(end);
+              setDone(true);
             }
-          }, duration / steps);
+          };
+          requestAnimationFrame(step);
         }
       },
       { threshold: 0.5 }
@@ -40,10 +43,17 @@ function CountUp({ end, suffix = "", prefix = "" }: { end: number; suffix?: stri
     return () => observer.disconnect();
   }, [end]);
 
+  const display = decimals > 0 ? count.toFixed(decimals) : Math.floor(count).toLocaleString();
+
   return (
-    <span ref={ref} className="font-mono-code">
-      {prefix}{count.toLocaleString()}{suffix}
-    </span>
+    <motion.span
+      ref={ref}
+      className="font-mono-code inline-block"
+      animate={done ? { scale: [1, 1.08, 1] } : {}}
+      transition={{ duration: 0.3 }}
+    >
+      {prefix}{display}{suffix}
+    </motion.span>
   );
 }
 
@@ -126,7 +136,7 @@ const Index = () => {
         <div className="container">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[
-              { label: "Total Raised", value: PLATFORM_STATS.totalRaised, suffix: " sBTC", prefix: "" },
+              { label: "Total Raised", value: PLATFORM_STATS.totalRaised, suffix: " sBTC", prefix: "", decimals: 1 },
               { label: "Campaigns Funded", value: PLATFORM_STATS.totalCampaigns, suffix: "", prefix: "" },
               { label: "Success Rate", value: PLATFORM_STATS.successRate, suffix: "%", prefix: "" },
             ].map((stat, i) => (
@@ -137,10 +147,10 @@ const Index = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15 }}
               >
-                <Card className="border-border/50 bg-gradient-card text-center">
+                <Card className="border-border/50 bg-gradient-card text-center transition-colors duration-300 hover:border-primary/30 hover:shadow-[0_8px_30px_hsl(43_96%_56%/0.15)]">
                   <CardContent className="p-6">
                     <div className="text-3xl font-bold text-primary md:text-4xl">
-                      <CountUp end={stat.value} suffix={stat.suffix} prefix={stat.prefix} />
+                      <CountUp end={stat.value} suffix={stat.suffix} prefix={stat.prefix} decimals={(stat as any).decimals || 0} />
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">{stat.label}</p>
                   </CardContent>
@@ -224,7 +234,7 @@ const Index = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15 }}
               >
-                <Card className="border-border/50 bg-gradient-card">
+                <Card className="border-border/50 bg-gradient-card transition-colors duration-300 hover:border-primary/30 hover:shadow-[0_8px_30px_hsl(43_96%_56%/0.15)]">
                   <CardContent className="flex items-start gap-4 p-6">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                       <item.icon className="h-5 w-5 text-primary" />
