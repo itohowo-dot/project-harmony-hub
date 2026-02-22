@@ -5,6 +5,7 @@ import { ArrowRight, Hexagon, Shield, Zap, Eye, Wallet, PenTool, Rocket, Chevron
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CampaignCard } from "@/components/CampaignCard";
+import { HeroDashboardMockup } from "@/components/HeroDashboardMockup";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
 import { PLATFORM_STATS, formatBtc } from "@/lib/mock-data";
@@ -258,6 +259,16 @@ const Index = () => {
                 </Link>
               </Button>
             </div>
+
+            {/* Dashboard Mockup */}
+            <motion.div
+              className="mt-12 md:mt-16"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.5 }}
+            >
+              <HeroDashboardMockup />
+            </motion.div>
           </motion.div>
         </div>
       </section>
