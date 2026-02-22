@@ -57,9 +57,15 @@ const CreateCampaign = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreeNoRefund, setAgreeNoRefund] = useState(false);
 
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
   const processFile = (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("Image must be under 5MB");
       return;
     }
     const url = URL.createObjectURL(file);
