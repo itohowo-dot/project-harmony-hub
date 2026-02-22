@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,6 +16,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { CATEGORIES, BTC_USD_PRICE, formatBtc, formatUsd } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import { usePageTitle } from "@/hooks/usePageTitle";
+
+const STORAGE_KEY = "bithive_create_campaign";
+
+function loadSaved() {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
 
 const STEPS = ["Basic Info", "Funding Goal", "Milestones", "Review & Launch"];
 const DURATIONS = [
@@ -33,20 +43,23 @@ interface MilestoneInput {
 }
 
 const CreateCampaign = () => {
+  usePageTitle("Create Campaign");
   const navigate = useNavigate();
-  const [step, setStep] = useState(0);
+  const saved = useRef(loadSaved());
+
+  const [step, setStep] = useState(saved.current?.step ?? 0);
 
   // Step 1
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [title, setTitle] = useState(saved.current?.title ?? "");
+  const [description, setDescription] = useState(saved.current?.description ?? "");
+  const [category, setCategory] = useState(saved.current?.category ?? "");
 
   // Step 2
-  const [goalAmount, setGoalAmount] = useState("1.0");
-  const [duration, setDuration] = useState(30);
+  const [goalAmount, setGoalAmount] = useState(saved.current?.goalAmount ?? "1.0");
+  const [duration, setDuration] = useState(saved.current?.duration ?? 30);
 
   // Step 3
-  const [milestones, setMilestones] = useState<MilestoneInput[]>([]);
+  const [milestones, setMilestones] = useState<MilestoneInput[]>(saved.current?.milestones ?? []);
 
   // Image
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -56,6 +69,13 @@ const CreateCampaign = () => {
   // Step 4
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreeNoRefund, setAgreeNoRefund] = useState(false);
+
+  // Persist form state to sessionStorage
+  useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+      step, title, description, category, goalAmount, duration, milestones,
+    }));
+  }, [step, title, description, category, goalAmount, duration, milestones]);
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -106,6 +126,7 @@ const CreateCampaign = () => {
   };
 
   const handleLaunch = () => {
+    sessionStorage.removeItem(STORAGE_KEY);
     toast.success("Campaign launched successfully! 🐝", {
       description: "Your campaign is now live on BitHive",
     });
