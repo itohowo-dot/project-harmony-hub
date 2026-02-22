@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Plus, Trash2, CheckCircle2, Hexagon } from "lucide-react";
@@ -71,7 +72,9 @@ const CreateCampaign = () => {
   };
 
   const handleLaunch = () => {
-    // Mock launch — just navigate to explore
+    toast.success("Campaign launched successfully! 🐝", {
+      description: "Your campaign is now live on BitHive",
+    });
     navigate("/explore");
   };
 

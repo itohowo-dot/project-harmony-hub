@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,25 @@ interface CampaignCardProps {
 
 export function CampaignCard({ campaign }: CampaignCardProps) {
   const progress = getProgressPercent(campaign.raisedAmount, campaign.goalAmount);
+  const barRef = useRef<HTMLDivElement>(null);
+  const [animatedWidth, setAnimatedWidth] = useState(0);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          requestAnimationFrame(() => setAnimatedWidth(progress));
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [progress]);
 
   return (
     <Link to={`/campaign/${campaign.id}`}>
@@ -53,11 +73,14 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
           </h3>
 
           {/* Progress Bar */}
-          <div className="space-y-1.5">
+          <div className="space-y-1.5" ref={barRef}>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light transition-all duration-600"
-                style={{ width: `${progress}%` }}
+                className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light"
+                style={{
+                  width: `${animatedWidth}%`,
+                  transition: "width 800ms ease-out",
+                }}
               />
             </div>
             <div className="flex items-center justify-between text-xs">

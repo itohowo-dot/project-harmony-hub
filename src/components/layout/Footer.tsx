@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Hexagon, Shield, Zap, Github } from "lucide-react";
 
 export function Footer() {
@@ -7,10 +8,10 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2">
               <Hexagon className="h-6 w-6 text-primary" fill="currentColor" strokeWidth={1.5} />
               <span className="font-heading text-lg font-bold text-gradient-amber">BitHive</span>
-            </div>
+            </Link>
             <p className="text-sm text-muted-foreground">
               The premier sBTC crowdfunding platform. Fund the future with Bitcoin.
             </p>
@@ -20,10 +21,10 @@ export function Footer() {
           <div className="space-y-3">
             <h4 className="font-heading text-sm font-semibold text-foreground">Platform</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="hover:text-foreground transition-colors cursor-pointer">Explore Campaigns</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">Create Campaign</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">How It Works</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">Dashboard</li>
+              <li><Link to="/explore" className="hover:text-foreground transition-colors">Explore Campaigns</Link></li>
+              <li><Link to="/create" className="hover:text-foreground transition-colors">Create Campaign</Link></li>
+              <li><a href="/#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
+              <li><Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link></li>
             </ul>
           </div>
 

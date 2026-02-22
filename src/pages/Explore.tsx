@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CampaignCard } from "@/components/CampaignCard";
+import { CampaignCardSkeleton } from "@/components/CampaignCardSkeleton";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
 import { CATEGORIES } from "@/lib/mock-data";
@@ -22,8 +23,15 @@ const Explore = () => {
   const [category, setCategory] = useState("All");
   const [tab, setTab] = useState("all");
   const [visibleCount, setVisibleCount] = useState(8);
+  const [loading, setLoading] = useState(true);
 
   const { campaigns } = useCampaigns({ status: tab, category, search });
+
+  useEffect(() => {
+    setLoading(true);
+    const t = setTimeout(() => setLoading(false), 400);
+    return () => clearTimeout(t);
+  }, [tab, category, search]);
 
   return (
     <PageWrapper>
@@ -77,7 +85,13 @@ const Explore = () => {
           </div>
 
           {/* Grid */}
-          {campaigns.length > 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <CampaignCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : campaigns.length > 0 ? (
             <>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {campaigns.slice(0, visibleCount).map((campaign, i) => (
