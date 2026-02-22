@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CampaignCard } from "@/components/CampaignCard";
@@ -19,6 +19,7 @@ const TABS = [
 ];
 
 const Explore = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [tab, setTab] = useState("all");
@@ -45,15 +46,10 @@ const Explore = () => {
 
           {/* Filters */}
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search campaigns..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 bg-card border-border/50"
-              />
-            </div>
+            <SearchAutocomplete
+              onSearchChange={setSearch}
+              onSelect={(id) => navigate(`/campaign/${id}`)}
+            />
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger className="w-full md:w-48 bg-card border-border/50">
                 <SelectValue placeholder="Category" />
