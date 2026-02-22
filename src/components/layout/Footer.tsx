@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Hexagon, Shield, Zap, Github } from "lucide-react";
 
 export function Footer() {
@@ -52,10 +53,16 @@ export function Footer() {
           <div className="space-y-3">
             <h4 className="font-heading text-sm font-semibold text-foreground">Resources</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="hover:text-foreground transition-colors cursor-pointer">Documentation</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">Smart Contracts</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">API Reference</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">FAQ</li>
+              {["Documentation", "Smart Contracts", "API Reference", "FAQ"].map((item) => (
+                <li key={item}>
+                  <button
+                    onClick={() => toast(`${item} coming soon`, { description: "We're working on it!" })}
+                    className="hover:text-foreground transition-colors"
+                  >
+                    {item}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
 

@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
+import { toast } from "sonner";
 import { ArrowLeft, Clock, Users, Share2, ExternalLink, CheckCircle2, Circle, Trophy, Medal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -209,7 +210,14 @@ const CampaignDetail = () => {
                 )}
 
                 <div className="flex items-center justify-center gap-2">
-                  <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground">
+                  <Button
+                    variant="ghost" size="sm"
+                    className="gap-1 text-xs text-muted-foreground"
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      toast("Link copied to clipboard", { description: "Share it with your network!" });
+                    }}
+                  >
                     <Share2 className="h-3.5 w-3.5" /> Share
                   </Button>
                   <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground">
