@@ -8,7 +8,7 @@ import { CampaignCard } from "@/components/CampaignCard";
 import { HeroDashboardMockup } from "@/components/HeroDashboardMockup";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
-import { PLATFORM_STATS, formatBtc } from "@/lib/mock-data";
+import { PLATFORM_STATS } from "@/lib/mock-data";
 
 function CountUp({ end, suffix = "", prefix = "", decimals = 0 }: { end: number; suffix?: string; prefix?: string; decimals?: number }) {
   const [count, setCount] = useState(0);
@@ -147,7 +147,7 @@ function HowItWorksSection() {
       
       <div className="container relative z-10">
         <motion.div
-          className="mb-16 text-center"
+          className="mb-12 text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
@@ -202,7 +202,7 @@ function HowItWorksSection() {
         </div>
 
         <motion.div
-          className="mt-14 text-center"
+          className="mt-10 text-center"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 1.2, duration: 0.5 }}
@@ -245,7 +245,7 @@ const Index = () => {
               </span>
             </h1>
             <motion.p
-              className="mt-4 text-lg text-muted-foreground md:text-xl"
+              className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground md:text-xl"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
@@ -280,7 +280,7 @@ const Index = () => {
       </section>
 
       {/* Platform Stats */}
-      <section className="border-y border-border/50 bg-card/30 py-12">
+      <section className="border-y border-border/50 bg-card/30 py-10">
         <div className="container">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[
@@ -310,7 +310,7 @@ const Index = () => {
       </section>
 
       {/* Featured Campaigns */}
-      <section className="py-16 md:py-20">
+      <section className="py-14 md:py-16">
         <div className="container">
           <div className="mb-8 flex items-center justify-between">
             <div>
@@ -342,7 +342,7 @@ const Index = () => {
       <HowItWorksSection />
 
       {/* Trust Indicators */}
-      <section className="py-16 md:py-20">
+      <section className="py-12 md:py-16">
         <div className="container">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {TRUST.map((item, i) => (
@@ -371,7 +371,7 @@ const Index = () => {
       </section>
 
       {/* CTA */}
-      <section className="border-t border-border/50 bg-card/30 py-16 md:py-20">
+      <section className="border-t border-border/50 bg-card/30 py-14 md:py-16">
         <div className="container text-center">
           <h2 className="font-heading text-2xl font-bold md:text-3xl">
             Ready to <span className="text-gradient-amber">Build the Future</span>?

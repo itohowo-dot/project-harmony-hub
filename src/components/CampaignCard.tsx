@@ -35,10 +35,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
 
   return (
     <Link to={`/campaign/${campaign.id}`}>
-      <motion.div
-        whileHover={{ y: -4, boxShadow: "0 8px 30px hsl(43 96% 56% / 0.2)" }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      >
+      <div>
       <Card className="group overflow-hidden border-border/50 bg-gradient-card transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_20px_hsl(43_96%_56%/0.15)]">
         {/* Image */}
         <div className="relative aspect-[16/10] overflow-hidden">
@@ -109,7 +106,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
           </div>
         </CardContent>
       </Card>
-      </motion.div>
+      </div>
     </Link>
   );
 }
