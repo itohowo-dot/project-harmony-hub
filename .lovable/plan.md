@@ -1,50 +1,47 @@
 
+# Add Glow Intensification on Hover to Premium Cards
 
-# Landing Page Tightening
+## Mobile Verification Result
+All landing page sections look clean on mobile (390px):
+- Hero: subtitle wraps naturally, CTAs are full-width and tappable
+- Stats: stacked vertically with proper spacing
+- Featured Campaigns: single-column cards with rotating borders
+- How It Works: steps stack cleanly
+- Trust Indicators: cards stack with good padding
+- CTA: centered, readable, well-spaced
 
-## Issues Found
+No mobile issues found.
 
-### 1. Competing hover effects on campaign cards (visual conflict)
-The `premium-card` CSS class adds `scale(1.02)` on hover, while the `CampaignCard` component's inner `motion.div` also applies `whileHover={{ y: -4, boxShadow: "..." }}`. These two hover animations fight each other, causing a jittery double-transform effect.
+## Glow Enhancement
 
-**Fix**: Remove the `whileHover` from inside `CampaignCard` since `premium-card` already handles the hover lift/scale.
+Add a glowing box-shadow on hover to the `.premium-card` class, creating a warm amber glow that intensifies when the user hovers. This complements the existing `scale(1.02)` and faster border rotation.
 
-### 2. Hero subtitle lacks max-width constraint
-The subtitle paragraph under "Fund the Future with Bitcoin" runs too wide on larger screens, reducing readability.
+### Changes
 
-**Fix**: Add `max-w-2xl` to the subtitle `<p>` tag (line 248).
+**File: `src/index.css`** -- Update `.premium-card` and `.premium-card:hover`
 
-### 3. Excessive vertical spacing between sections
-Several sections have generous padding that makes the page feel loose:
-- Stats section: `py-12` is too generous for a compact stat bar
-- Featured Campaigns to How It Works gap is large
-- Trust indicators section: `py-16 md:py-20` before the CTA creates dead space
-- CTA section: `py-16 md:py-20` is generous for a simple closing CTA
+Add a `box-shadow` transition to the base state and an amber glow `box-shadow` on hover:
 
-**Fix**: Tighten padding values:
-- Stats: `py-12` to `py-10`
-- Featured Campaigns: `py-16 md:py-20` to `py-14 md:py-16`
-- Trust indicators: `py-16 md:py-20` to `py-12 md:py-16`
-- CTA: `py-16 md:py-20` to `py-14 md:py-16`
+```css
+.premium-card {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--radius);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-### 4. How It Works section has loose internal spacing
-The `mb-16` header margin and `mt-14` CTA margin are generous.
+.premium-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px hsl(43 96% 56% / 0.25), 0 0 60px hsl(43 96% 56% / 0.1);
+}
+```
 
-**Fix**: Tighten to `mb-12` and `mt-10`.
+Also add a light-mode override to keep the glow subtler on light backgrounds:
 
-### 5. Unused import
-`formatBtc` is imported in `Index.tsx` but never used.
+```css
+:root:not(.dark) .premium-card:hover {
+  box-shadow: 0 0 15px hsl(43 96% 46% / 0.2), 0 0 40px hsl(43 96% 46% / 0.08);
+}
+```
 
-**Fix**: Remove from the import statement.
-
----
-
-## Technical Details
-
-### Files to modify
-
-| File | Changes |
-|------|---------|
-| `src/pages/Index.tsx` | Remove unused `formatBtc` import; add `max-w-2xl` to hero subtitle; tighten section padding values; tighten How It Works internal spacing |
-| `src/components/CampaignCard.tsx` | Remove `whileHover` from inner `motion.div` to avoid conflicting with `premium-card` hover |
-
+This is a single-file, 3-line addition that layers on top of the existing hover effects.
