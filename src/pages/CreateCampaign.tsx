@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Plus, Trash2, CheckCircle2, Hexagon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, Trash2, CheckCircle2, Hexagon, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,9 +44,30 @@ const CreateCampaign = () => {
   // Step 3
   const [milestones, setMilestones] = useState<MilestoneInput[]>([]);
 
+  // Image
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   // Step 4
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreeNoRefund, setAgreeNoRefund] = useState(false);
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select an image file");
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      setImagePreview(url);
+    }
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const goalNum = parseFloat(goalAmount) || 0;
   const milestoneTotal = milestones.reduce((s, m) => s + (parseFloat(m.amount) || 0), 0);
@@ -169,9 +190,33 @@ const CreateCampaign = () => {
                   </div>
                   <div>
                     <label className="text-sm font-medium">Campaign Image</label>
-                    <div className="mt-1 flex h-32 items-center justify-center rounded-lg border border-dashed border-border/50 bg-secondary/30 text-sm text-muted-foreground cursor-pointer hover:border-primary/30 transition-colors">
-                      Click to upload or drag & drop
-                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageSelect}
+                    />
+                    {imagePreview ? (
+                      <div className="relative mt-1 overflow-hidden rounded-lg border border-border/50">
+                        <img src={imagePreview} alt="Preview" className="h-32 w-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-2 right-2 rounded-full bg-background/80 p-1 backdrop-blur-sm hover:bg-background transition-colors"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        className="mt-1 flex h-32 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border/50 bg-secondary/30 text-sm text-muted-foreground cursor-pointer hover:border-primary/30 transition-colors"
+                      >
+                        <Upload className="h-5 w-5" />
+                        <span>Click to upload or drag & drop</span>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
