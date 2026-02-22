@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { PlusCircle, Eye, TrendingUp, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { PlusCircle, Eye, TrendingUp, CheckCircle2, XCircle, Clock, Hexagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ const Dashboard = () => {
   const myContributions = MOCK_CAMPAIGNS.filter((c) => MY_CONTRIBUTION_IDS.includes(c.id));
 
   const totalRaised = myCampaigns.reduce((s, c) => s + c.raisedAmount, 0);
+  const currentList = tab === "campaigns" ? myCampaigns : myContributions;
 
   return (
     <PageWrapper>
@@ -69,53 +70,74 @@ const Dashboard = () => {
         </div>
 
         {/* Content */}
-        <div className="space-y-3">
-          {(tab === "campaigns" ? myCampaigns : myContributions).map((campaign) => {
-            const progress = getProgressPercent(campaign.raisedAmount, campaign.goalAmount);
-            return (
-              <Card key={campaign.id} className="border-border/50 bg-gradient-card">
-                <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center">
-                  <img src={campaign.imageUrl} alt={campaign.title} className="h-16 w-24 rounded-md object-cover shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-heading text-sm font-semibold truncate">{campaign.title}</h3>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "shrink-0 text-xs",
-                          campaign.status === "active" && "border-success/30 text-success",
-                          campaign.status === "successful" && "border-primary/30 text-primary",
-                          campaign.status === "failed" && "border-destructive/30 text-destructive"
-                        )}
-                      >
-                        {campaign.status === "active" && <Clock className="mr-1 h-3 w-3" />}
-                        {campaign.status === "successful" && <CheckCircle2 className="mr-1 h-3 w-3" />}
-                        {campaign.status === "failed" && <XCircle className="mr-1 h-3 w-3" />}
-                        {campaign.status}
-                      </Badge>
-                    </div>
-                    <div className="mt-2 flex items-center gap-3">
-                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
-                        <div className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light" style={{ width: `${progress}%` }} />
+        {currentList.length > 0 ? (
+          <div className="space-y-3">
+            {currentList.map((campaign) => {
+              const progress = getProgressPercent(campaign.raisedAmount, campaign.goalAmount);
+              return (
+                <Card key={campaign.id} className="border-border/50 bg-gradient-card">
+                  <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center">
+                    <img src={campaign.imageUrl} alt={campaign.title} className="h-16 w-24 rounded-md object-cover shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-heading text-sm font-semibold truncate">{campaign.title}</h3>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "shrink-0 text-xs",
+                            campaign.status === "active" && "border-success/30 text-success",
+                            campaign.status === "successful" && "border-primary/30 text-primary",
+                            campaign.status === "failed" && "border-destructive/30 text-destructive"
+                          )}
+                        >
+                          {campaign.status === "active" && <Clock className="mr-1 h-3 w-3" />}
+                          {campaign.status === "successful" && <CheckCircle2 className="mr-1 h-3 w-3" />}
+                          {campaign.status === "failed" && <XCircle className="mr-1 h-3 w-3" />}
+                          {campaign.status}
+                        </Badge>
                       </div>
-                      <span className="font-mono-code text-xs text-primary shrink-0">{Math.round(progress)}%</span>
+                      <div className="mt-2 flex items-center gap-3">
+                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+                          <div className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light" style={{ width: `${progress}%` }} />
+                        </div>
+                        <span className="font-mono-code text-xs text-primary shrink-0">{Math.round(progress)}%</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2 shrink-0">
-                    <Button asChild variant="outline" size="sm" className="border-border/50">
-                      <Link to={`/campaign/${campaign.id}`}><Eye className="h-3.5 w-3.5" /></Link>
-                    </Button>
-                    {tab === "campaigns" && (
-                      <Button asChild variant="outline" size="sm" className="border-primary/30 text-primary">
-                        <Link to={`/campaign/${campaign.id}/manage`}>Manage</Link>
+                    <div className="flex gap-2 shrink-0">
+                      <Button asChild variant="outline" size="sm" className="border-border/50">
+                        <Link to={`/campaign/${campaign.id}`}><Eye className="h-3.5 w-3.5" /></Link>
                       </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                      {tab === "campaigns" && (
+                        <Button asChild variant="outline" size="sm" className="border-primary/30 text-primary">
+                          <Link to={`/campaign/${campaign.id}/manage`}>Manage</Link>
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="py-16 text-center space-y-4">
+            <Hexagon className="mx-auto h-14 w-14 text-primary/30" strokeWidth={1.5} />
+            <div>
+              <p className="text-lg font-heading font-semibold text-foreground">
+                {tab === "campaigns" ? "No campaigns yet" : "No contributions yet"}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {tab === "campaigns"
+                  ? "Launch your first campaign and start building with Bitcoin"
+                  : "Explore campaigns and support projects you believe in"}
+              </p>
+            </div>
+            <Button asChild className="glow-amber font-heading">
+              <Link to={tab === "campaigns" ? "/create" : "/explore"}>
+                {tab === "campaigns" ? "Create Your First Campaign" : "Explore Campaigns"}
+              </Link>
+            </Button>
+          </div>
+        )}
       </div>
     </PageWrapper>
   );
