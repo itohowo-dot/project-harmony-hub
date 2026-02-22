@@ -39,7 +39,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         whileHover={{ y: -4, boxShadow: "0 8px 30px hsl(43 96% 56% / 0.2)" }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
       >
-      <Card className="group overflow-hidden border-border/50 bg-gradient-card transition-colors duration-300 hover:border-primary/30">
+      <Card className="group overflow-hidden border-border/50 bg-gradient-card transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_20px_hsl(43_96%_56%/0.15)]">
         {/* Image */}
         <div className="relative aspect-[16/10] overflow-hidden">
           <img
@@ -79,7 +79,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
                 className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light"
                 style={{
                   width: `${animatedWidth}%`,
-                  transition: "width 800ms ease-out",
+                  transition: "width 1000ms cubic-bezier(0.22, 1, 0.36, 1)",
                 }}
               />
             </div>

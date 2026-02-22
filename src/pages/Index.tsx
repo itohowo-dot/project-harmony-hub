@@ -86,7 +86,7 @@ function ParallaxHexagon({ config, index, scrollY }: { config: typeof HEXAGON_CO
 
   return (
     <motion.div
-      className="absolute text-primary/10"
+      className="absolute text-primary/15"
       style={{ left: config.left, top: config.top, y, x, rotate }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -219,6 +219,10 @@ const Index = () => {
       {/* Hero */}
       <section className="relative overflow-hidden py-20 md:py-32 honeycomb-bg">
         <FloatingHexagons />
+        {/* Radial glow behind hero */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-[600px] h-[600px] md:w-[900px] md:h-[900px] rounded-full bg-[radial-gradient(ellipse_at_center,hsl(43_96%_56%/0.08)_0%,transparent_70%)]" />
+        </div>
         <div className="container relative z-10">
           <motion.div
             className="mx-auto max-w-3xl text-center"
@@ -228,12 +232,20 @@ const Index = () => {
           >
             <h1 className="font-heading text-4xl font-bold leading-tight md:text-6xl">
               Fund the Future with{" "}
-              <span className="text-gradient-amber">Bitcoin</span>
+              <span className="text-gradient-amber relative">
+                Bitcoin
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer bg-[length:200%_100%] rounded" />
+              </span>
             </h1>
-            <p className="mt-4 text-lg text-muted-foreground md:text-xl">
+            <motion.p
+              className="mt-4 text-lg text-muted-foreground md:text-xl"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
               Back innovative projects with sBTC. Transparent milestones, on-chain accountability,
               and the security of the world's strongest blockchain.
-            </p>
+            </motion.p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Button asChild size="lg" className="glow-amber gap-2 font-heading">
                 <Link to="/explore">
@@ -323,9 +335,9 @@ const Index = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15 }}
               >
-                <Card className="border-border/50 bg-gradient-card transition-colors duration-300 hover:border-primary/30 hover:shadow-[0_8px_30px_hsl(43_96%_56%/0.15)]">
+                <Card className="group border-border/50 bg-gradient-card transition-all duration-300 hover:border-primary/30 hover:shadow-[0_8px_30px_hsl(43_96%_56%/0.15)] hover:-translate-y-1">
                   <CardContent className="flex items-start gap-4 p-6">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
                       <item.icon className="h-5 w-5 text-primary" />
                     </div>
                     <div>

@@ -10,9 +10,15 @@ export function Footer() {
       document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
     } else {
       navigate("/");
-      setTimeout(() => {
-        document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
-      }, 500);
+      const tryScroll = (attempts = 0) => {
+        const el = document.getElementById("how-it-works");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        } else if (attempts < 3) {
+          setTimeout(() => tryScroll(attempts + 1), 400);
+        }
+      };
+      setTimeout(() => tryScroll(), 600);
     }
   };
 
