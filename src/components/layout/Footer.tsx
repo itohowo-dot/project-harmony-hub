@@ -39,7 +39,7 @@ export function Footer() {
           </div>
 
           {/* Platform */}
-          <div className="space-y-3">
+          <nav aria-label="Platform navigation" className="space-y-3">
             <h4 className="font-heading text-sm font-semibold text-foreground">Platform</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/explore" className="hover:text-foreground transition-colors">Explore Campaigns</Link></li>
@@ -47,10 +47,10 @@ export function Footer() {
               <li><button onClick={scrollToHowItWorks} className="hover:text-foreground transition-colors">How It Works</button></li>
               <li><Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link></li>
             </ul>
-          </div>
+          </nav>
 
           {/* Resources */}
-          <div className="space-y-3">
+          <nav aria-label="Resources navigation" className="space-y-3">
             <h4 className="font-heading text-sm font-semibold text-foreground">Resources</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               {["Documentation", "Smart Contracts", "API Reference", "FAQ"].map((item) => (
@@ -64,7 +64,7 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
           {/* Trust */}
           <div className="space-y-3">

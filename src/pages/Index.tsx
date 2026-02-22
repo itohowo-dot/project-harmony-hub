@@ -226,7 +226,7 @@ const Index = () => {
   return (
     <PageWrapper>
       {/* Hero */}
-      <section className="relative overflow-hidden py-20 md:py-32 honeycomb-bg">
+      <section aria-label="Hero" className="relative overflow-hidden py-20 md:py-32 honeycomb-bg">
         <FloatingHexagons />
         {/* Radial glow behind hero */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -282,7 +282,7 @@ const Index = () => {
       </section>
 
       {/* Platform Stats */}
-      <section className="border-y border-border/50 bg-card/30 py-10">
+      <section aria-label="Platform statistics" className="border-y border-border/50 bg-card/30 py-10">
         <div className="container">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[
@@ -312,7 +312,7 @@ const Index = () => {
       </section>
 
       {/* Featured Campaigns */}
-      <section className="py-14 md:py-16">
+      <section aria-label="Featured campaigns" className="py-14 md:py-16">
         <div className="container">
           <div className="mb-8 flex items-center justify-between">
             <div>
@@ -344,7 +344,7 @@ const Index = () => {
       <HowItWorksSection />
 
       {/* Trust Indicators */}
-      <section className="py-12 md:py-16">
+      <section aria-label="Trust indicators" className="py-12 md:py-16">
         <div className="container">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {TRUST.map((item, i) => (
@@ -373,7 +373,7 @@ const Index = () => {
       </section>
 
       {/* CTA */}
-      <section className="border-t border-border/50 bg-card/30 py-14 md:py-16">
+      <section aria-label="Call to action" className="border-t border-border/50 bg-card/30 py-14 md:py-16">
         <div className="container text-center">
           <h2 className="font-heading text-2xl font-bold md:text-3xl">
             Ready to <span className="text-gradient-amber">Build the Future</span>?

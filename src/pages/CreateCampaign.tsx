@@ -140,7 +140,7 @@ const CreateCampaign = () => {
         <p className="mt-1 text-muted-foreground">Launch your project in 4 simple steps</p>
 
         {/* Progress */}
-        <div className="mt-8 relative">
+        <div className="mt-8 relative" aria-label="Form progress" role="group">
           {/* Background connecting line */}
           <div className="absolute top-4 left-4 right-4 h-px bg-border" />
           {/* Animated fill line */}
@@ -150,7 +150,7 @@ const CreateCampaign = () => {
           />
           <div className="relative flex items-center justify-between">
             {STEPS.map((s, i) => (
-              <div key={s} className="flex flex-col items-center">
+              <div key={s} className="flex flex-col items-center" aria-current={i === step ? "step" : undefined}>
                 <motion.div
                   className={cn(
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors relative z-10",
@@ -160,6 +160,7 @@ const CreateCampaign = () => {
                   )}
                   animate={i < step ? { scale: [1, 1.15, 1] } : {}}
                   transition={{ duration: 0.3 }}
+                  aria-label={`Step ${i + 1}: ${s}${i < step ? " (completed)" : i === step ? " (current)" : ""}`}
                 >
                   {i < step ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
                 </motion.div>
@@ -187,8 +188,9 @@ const CreateCampaign = () => {
               <Card className="border-border/50 bg-gradient-card">
                 <CardContent className="space-y-5 p-6">
                   <div>
-                    <label className="text-sm font-medium">Campaign Title</label>
+                    <label htmlFor="campaign-title" className="text-sm font-medium">Campaign Title</label>
                     <Input
+                      id="campaign-title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Give your campaign a compelling name"
@@ -198,8 +200,9 @@ const CreateCampaign = () => {
                     <p className="mt-1 text-xs text-muted-foreground text-right">{title.length}/80</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Description</label>
+                    <label htmlFor="campaign-description" className="text-sm font-medium">Description</label>
                     <Textarea
+                      id="campaign-description"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="Describe what your project is about and why it matters"
@@ -210,7 +213,7 @@ const CreateCampaign = () => {
                     <p className="mt-1 text-xs text-muted-foreground text-right">{description.length}/500</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Category</label>
+                    <label htmlFor="campaign-category" className="text-sm font-medium">Category</label>
                     <Select value={category} onValueChange={setCategory}>
                       <SelectTrigger className="mt-1 bg-secondary border-border/50">
                         <SelectValue placeholder="Select a category" />
@@ -237,6 +240,7 @@ const CreateCampaign = () => {
                         <button
                           type="button"
                           onClick={removeImage}
+                          aria-label="Remove image"
                           className="absolute top-2 right-2 rounded-full bg-background/80 p-1 backdrop-blur-sm hover:bg-background transition-colors"
                         >
                           <X className="h-4 w-4" />
@@ -244,7 +248,11 @@ const CreateCampaign = () => {
                       </div>
                     ) : (
                       <div
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Upload campaign image"
                         onClick={() => fileInputRef.current?.click()}
+                        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInputRef.current?.click(); } }}
                         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                         onDragEnter={(e) => { e.preventDefault(); setIsDragging(true); }}
                         onDragLeave={() => setIsDragging(false)}
@@ -274,8 +282,9 @@ const CreateCampaign = () => {
               <Card className="border-border/50 bg-gradient-card">
                 <CardContent className="space-y-5 p-6">
                   <div>
-                    <label className="text-sm font-medium">Funding Goal (sBTC)</label>
+                    <label htmlFor="funding-goal" className="text-sm font-medium">Funding Goal (sBTC)</label>
                     <Input
+                      id="funding-goal"
                       type="number"
                       value={goalAmount}
                       onChange={(e) => setGoalAmount(e.target.value)}
@@ -286,11 +295,13 @@ const CreateCampaign = () => {
                     <p className="mt-1 text-xs text-muted-foreground">≈ {formatUsd(goalNum)}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Campaign Duration</label>
-                    <div className="mt-2 grid grid-cols-2 gap-3 md:grid-cols-4">
+                    <label id="duration-label" className="text-sm font-medium">Campaign Duration</label>
+                    <div className="mt-2 grid grid-cols-2 gap-3 md:grid-cols-4" role="radiogroup" aria-labelledby="duration-label">
                       {DURATIONS.map((d) => (
                         <button
                           key={d.days}
+                          role="radio"
+                          aria-checked={duration === d.days}
                           onClick={() => setDuration(d.days)}
                           className={cn(
                             "rounded-lg border p-3 text-center transition-colors",
@@ -334,7 +345,14 @@ const CreateCampaign = () => {
 
                   {milestones.length > 0 && (
                     <div className="space-y-2">
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                      <div
+                        className="h-2 w-full overflow-hidden rounded-full bg-secondary"
+                        role="progressbar"
+                        aria-valuenow={Math.round(Math.min((milestoneTotal / goalNum) * 100, 100))}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label="Milestone allocation progress"
+                      >
                         <div
                           className={cn(
                             "h-full rounded-full bg-gradient-to-r from-primary to-honey-light transition-all",
@@ -354,7 +372,7 @@ const CreateCampaign = () => {
                     <div key={m.id} className="space-y-2 rounded-lg border border-border/30 bg-secondary/20 p-4">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium text-muted-foreground">Milestone {i + 1}</span>
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeMilestone(m.id)}>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeMilestone(m.id)} aria-label={`Remove milestone ${i + 1}`}>
                           <Trash2 className="h-3.5 w-3.5 text-destructive" />
                         </Button>
                       </div>

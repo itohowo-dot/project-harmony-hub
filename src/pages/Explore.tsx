@@ -83,10 +83,12 @@ const Explore = () => {
           </div>
 
           {/* Tabs */}
-          <div className="mb-8 flex gap-1 overflow-x-auto rounded-lg border border-border/50 bg-card/50 p-1">
+          <div className="mb-8 flex gap-1 overflow-x-auto rounded-lg border border-border/50 bg-card/50 p-1" role="tablist" aria-label="Campaign status filter">
             {TABS.map((t) => (
               <button
                 key={t.value}
+                role="tab"
+                aria-selected={tab === t.value}
                 onClick={() => setTab(t.value)}
                 className={cn(
                   "whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors",

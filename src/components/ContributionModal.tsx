@@ -63,8 +63,9 @@ export function ContributionModal({ open, onOpenChange, campaign }: Contribution
             </DialogHeader>
             <div className="space-y-4 py-2">
               <div>
-                <label className="text-sm text-muted-foreground">Amount (sBTC)</label>
+                <label htmlFor="contribution-amount" className="text-sm text-muted-foreground">Amount (sBTC)</label>
                 <Input
+                  id="contribution-amount"
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
