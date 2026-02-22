@@ -208,7 +208,7 @@
 /* Premium card rotating gradient border */
 .premium-card {
   position: relative;
-  overflow: hidden;
+  isolation: isolate;
   border-radius: var(--radius);
 }
 
