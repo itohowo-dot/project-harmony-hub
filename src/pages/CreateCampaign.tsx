@@ -85,24 +85,32 @@ const CreateCampaign = () => {
         <p className="mt-1 text-muted-foreground">Launch your project in 4 simple steps</p>
 
         {/* Progress */}
-        <div className="mt-8 flex items-center gap-2">
-          {STEPS.map((s, i) => (
-            <div key={s} className="flex flex-1 items-center gap-2">
-              <div
-                className={cn(
-                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors",
-                  i <= step
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground"
-                )}
-              >
-                {i < step ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
+        <div className="mt-8 relative">
+          {/* Background connecting line */}
+          <div className="absolute top-4 left-4 right-4 h-px bg-border" />
+          {/* Animated fill line */}
+          <div
+            className="absolute top-4 left-4 h-px bg-primary transition-all duration-500 ease-out"
+            style={{ width: `calc(${(step / (STEPS.length - 1)) * 100}% - 2rem)` }}
+          />
+          <div className="relative flex items-center justify-between">
+            {STEPS.map((s, i) => (
+              <div key={s} className="flex flex-col items-center">
+                <motion.div
+                  className={cn(
+                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors relative z-10",
+                    i <= step
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground"
+                  )}
+                  animate={i < step ? { scale: [1, 1.15, 1] } : {}}
+                  transition={{ duration: 0.3 }}
+                >
+                  {i < step ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
+                </motion.div>
               </div>
-              {i < STEPS.length - 1 && (
-                <div className={cn("h-px flex-1", i < step ? "bg-primary" : "bg-border")} />
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
         <div className="mt-2 flex justify-between text-xs text-muted-foreground">
           {STEPS.map((s) => (
@@ -337,7 +345,7 @@ const CreateCampaign = () => {
             <Button
               onClick={() => setStep((s) => s + 1)}
               disabled={!canNext()}
-              className="gap-1 glow-amber"
+              className={cn("gap-1 glow-amber", canNext() && "animate-pulse-glow")}
             >
               Continue <ArrowRight className="h-4 w-4" />
             </Button>

@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Home, Compass, PlusCircle, User } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -22,11 +23,20 @@ export function MobileNav() {
               key={path}
               to={path}
               className={cn(
-                "flex flex-col items-center gap-1 px-3 py-1.5 text-xs transition-colors",
+                "relative flex flex-col items-center gap-1 px-3 py-1.5 text-xs transition-colors",
                 isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className={cn("h-5 w-5", isActive && "drop-shadow-[0_0_6px_hsl(43_96%_56%/0.6)]")} />
+              {isActive && (
+                <motion.div
+                  layoutId="mobile-nav-indicator"
+                  className="absolute -top-px left-1/4 right-1/4 h-0.5 rounded-full bg-primary"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <motion.div whileTap={{ scale: 0.85 }} transition={{ duration: 0.1 }}>
+                <Icon className={cn("h-5 w-5", isActive && "drop-shadow-[0_0_6px_hsl(43_96%_56%/0.6)]")} />
+              </motion.div>
               <span>{label}</span>
             </Link>
           );

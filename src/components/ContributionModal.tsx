@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { type Campaign, formatBtc, formatUsd, BTC_USD_PRICE } from "@/lib/mock-data";
 import { Loader2, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
 
 type TxState = "input" | "pending" | "success" | "error";
 
@@ -101,7 +102,10 @@ export function ContributionModal({ open, onOpenChange, campaign }: Contribution
 
         {txState === "pending" && (
           <div className="py-8 text-center space-y-4">
-            <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary" />
+            <div className="relative mx-auto h-12 w-12">
+              <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping" />
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
             <div>
               <h3 className="font-heading text-lg font-semibold">Transaction Pending</h3>
               <p className="mt-1 text-sm text-muted-foreground">Confirming on the Stacks blockchain...</p>
@@ -115,7 +119,9 @@ export function ContributionModal({ open, onOpenChange, campaign }: Contribution
 
         {txState === "success" && (
           <div className="py-8 text-center space-y-4">
-            <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 15 }}>
+              <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+            </motion.div>
             <div>
               <h3 className="font-heading text-lg font-semibold">Contribution Successful! 🎉</h3>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -128,7 +134,9 @@ export function ContributionModal({ open, onOpenChange, campaign }: Contribution
 
         {txState === "error" && (
           <div className="py-8 text-center space-y-4">
-            <XCircle className="mx-auto h-12 w-12 text-destructive" />
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 15 }}>
+              <XCircle className="mx-auto h-12 w-12 text-destructive" />
+            </motion.div>
             <div>
               <h3 className="font-heading text-lg font-semibold">Transaction Failed</h3>
               <p className="mt-1 text-sm text-muted-foreground">Something went wrong. Please try again.</p>

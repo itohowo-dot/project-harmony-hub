@@ -8,7 +8,41 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { MOCK_CAMPAIGNS, formatBtc, getProgressPercent } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+
+function DashboardProgressBar({ progress }: { progress: number }) {
+  const barRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          requestAnimationFrame(() => setWidth(progress));
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [progress]);
+
+  return (
+    <div className="mt-2 flex items-center gap-3" ref={barRef}>
+      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light"
+          style={{ width: `${width}%`, transition: "width 1000ms cubic-bezier(0.22, 1, 0.36, 1)" }}
+        />
+      </div>
+      <span className="font-mono-code text-xs text-primary shrink-0">{Math.round(progress)}%</span>
+    </div>
+  );
+}
 
 const MY_CAMPAIGN_IDS = ["1", "3", "5"];
 const MY_CONTRIBUTION_IDS = ["2", "7", "8"];
@@ -163,12 +197,7 @@ const Dashboard = () => {
                             {campaign.status}
                           </Badge>
                         </div>
-                        <div className="mt-2 flex items-center gap-3">
-                          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
-                            <div className="h-full rounded-full bg-gradient-to-r from-primary to-honey-light" style={{ width: `${progress}%` }} />
-                          </div>
-                          <span className="font-mono-code text-xs text-primary shrink-0">{Math.round(progress)}%</span>
-                        </div>
+                        <DashboardProgressBar progress={progress} />
                       </div>
                       <div className="flex gap-2 shrink-0">
                         <Button asChild variant="outline" size="sm" className="border-border/50">
