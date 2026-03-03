@@ -1,37 +1,53 @@
 
 
-# Error Boundaries + Enhanced Theme Toggle Animation
+# Social Meta Tags + Global Loading Progress Bar
 
-## 1. Error Boundary Component — `src/components/ErrorBoundary.tsx` (new file)
+## 1. Dynamic Meta Tags Hook — `src/hooks/usePageMeta.ts` (new)
 
-Create a React class component (error boundaries require class components) that:
-- Catches runtime errors via `componentDidCatch` / `getDerivedStateFromError`
-- Displays a friendly error UI with the BitHive branding (hexagon icon, amber gradient)
-- Shows a "Try Again" button that resets error state and reloads
-- Shows a "Go Home" link as fallback
-- Uses Framer Motion for a fade-in animation on the error screen
+Create a `usePageMeta` hook that sets `<meta>` tags dynamically via DOM manipulation (since this is a SPA with no SSR). It will:
+- Set `og:title`, `og:description`, `og:image`, `og:url`, `og:type`
+- Set `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`
+- Clean up on unmount (restore defaults)
+- Replace the existing `usePageTitle` calls with this more comprehensive hook
 
-## 2. Wire Error Boundary into App — `src/App.tsx`
+Interface:
+```ts
+usePageMeta({ title, description, image?, url? })
+```
 
-Wrap the `<BrowserRouter>` (and its children) with `<ErrorBoundary>` so any page-level crash is caught. Place it inside `ThemeProvider` so the error page respects the current theme.
+## 2. Wire Meta Tags Into Pages
 
-## 3. Enhanced Theme Toggle Animation — `src/components/layout/Header.tsx`
+- **CampaignDetail.tsx**: Call `usePageMeta` with campaign title, story excerpt, and imageUrl
+- **Index.tsx**: Default branding meta
+- **Explore.tsx**: "Explore Campaigns" meta
+- **CreateCampaign.tsx**: "Create a Campaign" meta
+- **Dashboard.tsx**: "Dashboard" meta
 
-The current toggle already has a basic rotate+fade animation via `motion.div`. Enhance it with:
-- A scale bounce effect (scale 0 → 1.2 → 1) combined with the rotation
-- A brief background flash/pulse on the button itself using `motion` `whileTap={{ scale: 0.9 }}`
+The hook internally calls `usePageTitle` logic (setting `document.title`) so existing behavior is preserved.
 
-This is a small tweak to the existing `motion.div` transition properties — no structural changes needed.
+## 3. Route Transition Progress Bar — `src/components/RouteProgressBar.tsx` (new)
 
-## 4. Theme Persistence — Already Done
+Create a thin animated progress bar fixed at the top of the viewport (like YouTube/GitHub style). It:
+- Listens to route changes via `useLocation` from react-router-dom
+- On route change: animates width from 0% → 80% quickly, then pauses, then completes to 100% and fades out
+- Uses Framer Motion for smooth animation
+- Styled with the primary amber gradient, 2-3px height, `z-50` fixed positioning
 
-`ThemeProvider.tsx` already reads from and writes to `localStorage`. No changes needed.
+## 4. Integrate Progress Bar — `src/App.tsx`
 
-## Files Affected
+Add `<RouteProgressBar />` inside `<BrowserRouter>` (needs access to router context).
+
+## Files
 
 | File | Action |
 |------|--------|
-| `src/components/ErrorBoundary.tsx` | Create |
-| `src/App.tsx` | Add ErrorBoundary wrapper |
-| `src/components/layout/Header.tsx` | Enhance toggle animation |
+| `src/hooks/usePageMeta.ts` | Create — dynamic OG/Twitter meta hook |
+| `src/components/RouteProgressBar.tsx` | Create — top loading bar |
+| `src/App.tsx` | Add RouteProgressBar |
+| `src/pages/CampaignDetail.tsx` | Use usePageMeta |
+| `src/pages/Index.tsx` | Use usePageMeta |
+| `src/pages/Explore.tsx` | Use usePageMeta |
+| `src/pages/CreateCampaign.tsx` | Use usePageMeta |
+| `src/pages/Dashboard.tsx` | Use usePageMeta |
+| `src/hooks/usePageTitle.ts` | Keep as-is (usePageMeta calls it internally) |
 
