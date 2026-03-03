@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 import { Hexagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const NotFound = () => {
-  usePageTitle("Page Not Found");
+  usePageMeta({ title: "Page Not Found", description: "The page you're looking for doesn't exist." });
   const location = useLocation();
 
   useEffect(() => {
