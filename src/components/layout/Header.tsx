@@ -52,22 +52,21 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           {/* Theme Toggle */}
-          <Button
+          <motion.button
             onClick={toggleTheme}
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 text-muted-foreground hover:text-foreground"
+            whileTap={{ scale: 0.9 }}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             aria-label="Toggle theme"
           >
             <motion.div
               key={theme}
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              transition={{ duration: 0.3 }}
+              initial={{ rotate: -90, scale: 0, opacity: 0 }}
+              animate={{ rotate: 0, scale: [1.2, 1], opacity: 1 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </motion.div>
-          </Button>
+          </motion.button>
 
           {/* Wallet Button */}
           <Button

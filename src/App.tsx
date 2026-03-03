@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { WalletProvider } from "@/contexts/WalletContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import LoadingFallback from "./components/LoadingFallback";
 
 const Index = lazy(() => import("./pages/Index"));
@@ -20,6 +21,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <ThemeProvider>
+    <ErrorBoundary>
     <WalletProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -41,6 +43,7 @@ const App = () => (
       </TooltipProvider>
     </QueryClientProvider>
     </WalletProvider>
+    </ErrorBoundary>
   </ThemeProvider>
 );
 
