@@ -8,7 +8,7 @@ import { CampaignCard } from "@/components/CampaignCard";
 import { CampaignCardSkeleton } from "@/components/CampaignCardSkeleton";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { CATEGORIES } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +27,7 @@ const SORT_OPTIONS = [
 ];
 
 const Explore = () => {
-  usePageTitle("Explore Campaigns");
+  usePageMeta({ title: "Explore Campaigns", description: "Browse and discover Bitcoin-powered campaigns on BitHive." });
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");

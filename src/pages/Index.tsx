@@ -8,7 +8,7 @@ import { CampaignCard } from "@/components/CampaignCard";
 import { HeroDashboardMockup } from "@/components/HeroDashboardMockup";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { PLATFORM_STATS } from "@/lib/mock-data";
 
 function CountUp({ end, suffix = "", prefix = "", decimals = 0 }: { end: number; suffix?: string; prefix?: string; decimals?: number }) {
@@ -220,7 +220,7 @@ function HowItWorksSection() {
 }
 
 const Index = () => {
-  usePageTitle("");
+  usePageMeta({ description: "Discover and back Bitcoin-powered campaigns on BitHive. Crowdfund the future with sBTC." });
   const { featuredCampaigns } = useCampaigns();
 
   return (

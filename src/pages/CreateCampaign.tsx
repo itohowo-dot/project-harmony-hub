@@ -16,7 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { CATEGORIES, BTC_USD_PRICE, formatBtc, formatUsd } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const STORAGE_KEY = "bithive_create_campaign";
 
@@ -43,7 +43,7 @@ interface MilestoneInput {
 }
 
 const CreateCampaign = () => {
-  usePageTitle("Create Campaign");
+  usePageMeta({ title: "Create Campaign", description: "Launch your Bitcoin-powered campaign on BitHive." });
   const navigate = useNavigate();
   const saved = useRef(loadSaved());
 

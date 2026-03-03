@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { formatBtc, formatUsd, getProgressPercent, truncateAddress } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -22,7 +22,11 @@ const CampaignDetail = () => {
   const campaign = getCampaignById(id || "");
   const [showContribute, setShowContribute] = useState(false);
   const hasConfetti = useRef(false);
-  usePageTitle(campaign?.title || "Campaign Not Found");
+  usePageMeta({
+    title: campaign?.title || "Campaign Not Found",
+    description: campaign?.story?.slice(0, 155) || "View campaign details on BitHive.",
+    image: campaign?.imageUrl,
+  });
 
   // Confetti burst for funded campaigns
   useEffect(() => {
