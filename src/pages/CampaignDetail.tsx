@@ -15,6 +15,7 @@ import { formatBtc, formatUsd, getProgressPercent, truncateAddress } from "@/lib
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { ContributionModal } from "@/components/ContributionModal";
+import { useFavorites } from "@/hooks/useFavorites";
 
 const CampaignDetail = () => {
   const { id } = useParams();
@@ -22,6 +23,8 @@ const CampaignDetail = () => {
   const campaign = getCampaignById(id || "");
   const [showContribute, setShowContribute] = useState(false);
   const hasConfetti = useRef(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const saved = campaign ? isFavorite(campaign.id) : false;
   usePageMeta({
     title: campaign?.title || "Campaign Not Found",
     description: campaign?.story?.slice(0, 155) || "View campaign details on BitHive.",
@@ -235,6 +238,17 @@ const CampaignDetail = () => {
                 )}
 
                 <div className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="ghost" size="sm"
+                    className={cn(
+                      "gap-1 text-xs",
+                      saved ? "text-primary" : "text-muted-foreground"
+                    )}
+                    onClick={() => toggleFavorite(campaign.id)}
+                  >
+                    <Heart className={cn("h-3.5 w-3.5", saved && "fill-primary")} />
+                    {saved ? "Saved" : "Save"}
+                  </Button>
                   <Button
                     variant="ghost" size="sm"
                     className="gap-1 text-xs text-muted-foreground"

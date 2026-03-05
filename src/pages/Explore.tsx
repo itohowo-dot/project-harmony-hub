@@ -8,6 +8,7 @@ import { CampaignCard } from "@/components/CampaignCard";
 import { CampaignCardSkeleton } from "@/components/CampaignCardSkeleton";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useCampaigns } from "@/hooks/useCampaigns";
+import { useFavorites } from "@/hooks/useFavorites";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { CATEGORIES } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
@@ -37,7 +38,9 @@ const Explore = () => {
   const [visibleCount, setVisibleCount] = useState(8);
   const [loading, setLoading] = useState(true);
 
-  const { campaigns } = useCampaigns({ status: tab, category, search, sort });
+  const { campaigns } = useCampaigns({ status: tab === "saved" ? "all" : tab, category, search, sort });
+  const { favorites, isFavorite } = useFavorites();
+  const displayCampaigns = tab === "saved" ? campaigns.filter((c) => isFavorite(c.id)) : campaigns;
 
   useEffect(() => {
     setLoading(true);
@@ -110,10 +113,10 @@ const Explore = () => {
                 <CampaignCardSkeleton key={i} />
               ))}
             </div>
-          ) : campaigns.length > 0 ? (
+          ) : displayCampaigns.length > 0 ? (
             <>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {campaigns.slice(0, visibleCount).map((campaign, i) => (
+                {displayCampaigns.slice(0, visibleCount).map((campaign, i) => (
                   <motion.div
                     key={campaign.id}
                     className="premium-card"
@@ -125,7 +128,7 @@ const Explore = () => {
                   </motion.div>
                 ))}
               </div>
-              {visibleCount < campaigns.length && (
+              {visibleCount < displayCampaigns.length && (
                 <div className="mt-10 text-center">
                   <Button variant="outline" className="border-primary/30" onClick={() => setVisibleCount((v) => v + 8)}>
                     Load More
@@ -133,6 +136,14 @@ const Explore = () => {
                 </div>
               )}
             </>
+          ) : tab === "saved" ? (
+            <div className="py-20 text-center space-y-4">
+              <p className="text-lg text-muted-foreground">You haven't saved any campaigns yet.</p>
+              <p className="text-sm text-muted-foreground">Click the ♥ icon on any campaign card to save it here.</p>
+              <Button variant="outline" className="border-primary/30" onClick={() => setTab("all")}>
+                Browse All Campaigns
+              </Button>
+            </div>
           ) : (
             <div className="py-20 text-center space-y-4">
               <p className="text-lg text-muted-foreground">No campaigns found matching your filters.</p>
