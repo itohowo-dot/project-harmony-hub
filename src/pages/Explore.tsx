@@ -17,6 +17,7 @@ const TABS = [
   { value: "active", label: "Active" },
   { value: "successful", label: "Successful" },
   { value: "ending-soon", label: "Ending Soon" },
+  { value: "saved", label: "♥ Saved" },
 ];
 
 const SORT_OPTIONS = [

@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
-import { ArrowLeft, Clock, Users, Share2, ExternalLink, CheckCircle2, Circle, Trophy, Medal, Hexagon } from "lucide-react";
+import { ArrowLeft, Clock, Users, Share2, ExternalLink, CheckCircle2, Circle, Trophy, Medal, Hexagon, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
