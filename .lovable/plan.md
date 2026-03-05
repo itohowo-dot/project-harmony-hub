@@ -1,52 +1,53 @@
 
 
-# Favorites/Bookmarking System
+# Social Meta Tags + Global Loading Progress Bar
 
-## Verification Results
+## 1. Dynamic Meta Tags Hook — `src/hooks/usePageMeta.ts` (new)
 
-The progress bar and dynamic meta tags are working correctly:
-- Home: "BitHive — Fund the Future with Bitcoin"
-- Explore: "Explore Campaigns | BitHive"
-- Campaign Detail: "Decentralized Solar Grid for Rural Communities | BitHive"
-- Progress bar animation visible during all route transitions
+Create a `usePageMeta` hook that sets `<meta>` tags dynamically via DOM manipulation (since this is a SPA with no SSR). It will:
+- Set `og:title`, `og:description`, `og:image`, `og:url`, `og:type`
+- Set `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`
+- Clean up on unmount (restore defaults)
+- Replace the existing `usePageTitle` calls with this more comprehensive hook
 
----
+Interface:
+```ts
+usePageMeta({ title, description, image?, url? })
+```
 
-## Favorites System Plan
+## 2. Wire Meta Tags Into Pages
 
-Since there's no backend/auth, favorites will be persisted in `localStorage`.
+- **CampaignDetail.tsx**: Call `usePageMeta` with campaign title, story excerpt, and imageUrl
+- **Index.tsx**: Default branding meta
+- **Explore.tsx**: "Explore Campaigns" meta
+- **CreateCampaign.tsx**: "Create a Campaign" meta
+- **Dashboard.tsx**: "Dashboard" meta
 
-### 1. Create `useFavorites` hook — `src/hooks/useFavorites.ts`
+The hook internally calls `usePageTitle` logic (setting `document.title`) so existing behavior is preserved.
 
-A custom hook that manages favorite campaign IDs in localStorage:
-- `favorites: string[]` — list of saved campaign IDs
-- `toggleFavorite(id: string)` — add/remove
-- `isFavorite(id: string)` — check status
-- Syncs to `localStorage` key `"bithive-favorites"`
+## 3. Route Transition Progress Bar — `src/components/RouteProgressBar.tsx` (new)
 
-### 2. Add heart/bookmark button to Campaign Cards — `src/components/CampaignCard.tsx`
+Create a thin animated progress bar fixed at the top of the viewport (like YouTube/GitHub style). It:
+- Listens to route changes via `useLocation` from react-router-dom
+- On route change: animates width from 0% → 80% quickly, then pauses, then completes to 100% and fades out
+- Uses Framer Motion for smooth animation
+- Styled with the primary amber gradient, 2-3px height, `z-50` fixed positioning
 
-Add a small heart icon button in the top-left corner of the card image (opposite the status badge). Clicking toggles favorite state with a scale animation. Uses `e.preventDefault()` to avoid navigating via the parent `<Link>`.
+## 4. Integrate Progress Bar — `src/App.tsx`
 
-### 3. Add heart button to Campaign Detail — `src/pages/CampaignDetail.tsx`
-
-Add a "Save" / "Saved" button next to the existing "Share" and "Contract" action buttons below "Back This Project".
-
-### 4. Add "Saved" tab to Explore page — `src/pages/Explore.tsx`
-
-Add a new filter tab "Saved" alongside All/Active/Successful/Ending Soon. When selected, filters campaigns to only those in the user's favorites list. Shows an empty state if no favorites.
-
-### 5. Add favorites count to Dashboard — `src/pages/Dashboard.tsx`
-
-Add a 4th stat card showing the number of saved/bookmarked campaigns.
+Add `<RouteProgressBar />` inside `<BrowserRouter>` (needs access to router context).
 
 ## Files
 
 | File | Action |
 |------|--------|
-| `src/hooks/useFavorites.ts` | Create — localStorage-backed hook |
-| `src/components/CampaignCard.tsx` | Add heart toggle button |
-| `src/pages/CampaignDetail.tsx` | Add Save/Saved button |
-| `src/pages/Explore.tsx` | Add "Saved" filter tab |
-| `src/pages/Dashboard.tsx` | Add saved campaigns stat |
+| `src/hooks/usePageMeta.ts` | Create — dynamic OG/Twitter meta hook |
+| `src/components/RouteProgressBar.tsx` | Create — top loading bar |
+| `src/App.tsx` | Add RouteProgressBar |
+| `src/pages/CampaignDetail.tsx` | Use usePageMeta |
+| `src/pages/Index.tsx` | Use usePageMeta |
+| `src/pages/Explore.tsx` | Use usePageMeta |
+| `src/pages/CreateCampaign.tsx` | Use usePageMeta |
+| `src/pages/Dashboard.tsx` | Use usePageMeta |
+| `src/hooks/usePageTitle.ts` | Keep as-is (usePageMeta calls it internally) |
 

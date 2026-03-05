@@ -10,6 +10,7 @@ import { MOCK_CAMPAIGNS, formatBtc, getProgressPercent } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useFavorites } from "@/hooks/useFavorites";
 
 function DashboardProgressBar({ progress }: { progress: number }) {
   const barRef = useRef<HTMLDivElement>(null);
@@ -92,11 +93,13 @@ const STAT_TOOLTIPS = [
   "Total campaigns you've created on BitHive",
   "Combined sBTC raised across all your campaigns",
   "Percentage of your campaigns that reached their goal",
+  "Campaigns you've bookmarked for later",
 ];
 
 const Dashboard = () => {
   usePageMeta({ title: "Dashboard", description: "Manage your BitHive campaigns and contributions." });
   const [tab, setTab] = useState<"campaigns" | "contributions">("campaigns");
+  const { favorites } = useFavorites();
   const myCampaigns = MOCK_CAMPAIGNS.filter((c) => MY_CAMPAIGN_IDS.includes(c.id));
   const myContributions = MOCK_CAMPAIGNS.filter((c) => MY_CONTRIBUTION_IDS.includes(c.id));
 
@@ -108,6 +111,7 @@ const Dashboard = () => {
     { label: "Campaigns Created", value: myCampaigns.length, suffix: "", display: myCampaigns.length.toString() },
     { label: "Total Raised", value: totalRaised, suffix: " sBTC", display: formatBtc(totalRaised) },
     { label: "Success Rate", value: successRate, suffix: "%", display: `${successRate}%` },
+    { label: "Saved", value: favorites.length, suffix: "", display: favorites.length.toString() },
   ];
 
   return (
@@ -126,7 +130,7 @@ const Dashboard = () => {
         </div>
 
         {/* Stats */}
-        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
           {stats.map((stat, i) => (
             <Tooltip key={stat.label}>
               <TooltipTrigger asChild>

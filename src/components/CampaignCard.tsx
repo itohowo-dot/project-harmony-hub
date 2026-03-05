@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { type Campaign, getProgressPercent, formatBtc } from "@/lib/mock-data";
-import { Clock, Users } from "lucide-react";
+import { Clock, Users, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface CampaignCardProps {
   campaign: Campaign;
@@ -16,6 +17,8 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
   const barRef = useRef<HTMLDivElement>(null);
   const [animatedWidth, setAnimatedWidth] = useState(0);
   const hasAnimated = useRef(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const saved = isFavorite(campaign.id);
 
   useEffect(() => {
     const el = barRef.current;
@@ -46,6 +49,35 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
             loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
+
+          {/* Favorite button */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleFavorite(campaign.id);
+            }}
+            aria-label={saved ? "Remove from saved" : "Save campaign"}
+            className="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-card/60 backdrop-blur-sm border border-border/30 transition-colors hover:bg-card/80"
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={saved ? "filled" : "empty"}
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.5, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <Heart
+                  className={cn(
+                    "h-4 w-4 transition-colors",
+                    saved ? "fill-primary text-primary" : "text-muted-foreground"
+                  )}
+                />
+              </motion.div>
+            </AnimatePresence>
+          </button>
+
           <Badge
             className={cn(
               "absolute right-3 top-3 text-xs",
